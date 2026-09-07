@@ -20,7 +20,7 @@ const state = {
     { id: '#DEV-1008', name: 'Jignesh Patel', phone: '9823456780', city: 'Ahmedabad', samaj: 'General Committee', status: 'Active', visits: 7 }
   ],
   
-  // Financial Donations Log
+  // Financial Donations Log — superseded by the Donations module (donations.js)
   donations: [
     { receipt: '#REC-101', name: 'Rameshbhai Rabari', category: 'Pooja / Seva Booking', mode: 'Cash', date: '05 Sept 2026', amount: 1100 },
     { receipt: '#REC-102', name: 'Priya Sharma', category: 'General Donation', mode: 'UPI', date: '05 Sept 2026', amount: 501 },
@@ -30,7 +30,7 @@ const state = {
     { receipt: '#REC-106', name: 'Hetal Shah', category: 'Pooja / Seva Booking', mode: 'UPI', date: '03 Sept 2026', amount: 251 }
   ],
 
-  // 36 Pooja Master Catalog
+  // 36 Pooja Master Catalog — superseded by POOJA.poojaTypes (pooja.js); kept for reference only
   poojas: [
     { id: 1, name: 'Visat Meldi Mata Vishesh Havan', duration: '60 mins', fee: 1100, category: 'Special Havan' },
     { id: 2, name: 'Maha Aarti & Deepotsav', duration: '30 mins', fee: 501, category: 'Daily Ritual' },
@@ -65,7 +65,6 @@ const state = {
 document.addEventListener('DOMContentLoaded', () => {
   setupNavigation();
   renderDevoteeTable();
-  renderDonationsTable();
   renderInventoryTable();
   renderExpensesTable();
   initCharts();
@@ -98,7 +97,33 @@ function toggleSidebarMenu() {
   }
 }
 
+/**
+ * Pages the currently active session may open.
+ * Returns null for an unrestricted (admin / core-team) session, otherwise
+ * the allow-list for the one restricted module scope that is active.
+ * Kept here (not in a module -ui.js) so switchPage can enforce it centrally.
+ */
+function currentAllowedPages() {
+  if (typeof CMT !== 'undefined' && CMT.session && CMT.session.role === 'leader') return ['dashboard', 'committees'];
+  if (typeof POOJA !== 'undefined' && POOJA.session && POOJA.session.role === 'coordinator') return ['dashboard', 'puja'];
+  if (typeof MG !== 'undefined' && MG.session && MG.session.role === 'lead') return ['dashboard', 'management'];
+  return null;
+}
+
+/** True when the active session is allowed to open pageId. */
+function canOpenPage(pageId) {
+  const allowed = currentAllowedPages();
+  return !allowed || allowed.indexOf(pageId) !== -1;
+}
+
 function switchPage(pageId) {
+  // Central access guard — a scoped leader/coordinator can never be routed
+  // (via a dashboard shortcut, calendar item, deep link, etc.) into a module
+  // they are not authorised for.
+  if (!canOpenPage(pageId)) {
+    if (typeof showToast === 'function') showToast('You do not have access to that section.');
+    pageId = 'dashboard';
+  }
   state.activePage = pageId;
 
   document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(el => {
@@ -124,8 +149,40 @@ function switchPage(pageId) {
 }
 
 // Scoped User Role Switcher
+// Only one module (Management OR Pooja) is ever in a restricted scope at a time.
+// The sibling module is reset to admin FIRST (silently) and the target scope is
+// activated LAST, so the restricting nav-chrome pass is always the final writer.
 function changeRoleScope(role) {
   state.roleScope = role;
+
+  const resetOthers = (except) => {
+    if (except !== 'mg' && typeof setMgSession === 'function') setMgSession('admin', null, false);
+    if (except !== 'pj' && typeof setPoojaSession === 'function') setPoojaSession('admin', null, false);
+    if (except !== 'cmt' && typeof setCmtSession === 'function') setCmtSession('admin', null, false);
+  };
+
+  // Pooja Coordinator scope
+  if (role.indexOf('coord:') === 0) {
+    resetOthers('pj');
+    if (typeof setPoojaSession === 'function') setPoojaSession('coordinator', role.slice(6));
+    return;
+  }
+  // Management Lead scope
+  if (role.indexOf('lead:') === 0) {
+    resetOthers('mg');
+    if (typeof setMgSession === 'function') setMgSession('lead', role.slice(5));
+    return;
+  }
+  // Committee Leader scope
+  if (role.indexOf('cmt:') === 0) {
+    resetOthers('cmt');
+    if (typeof setCmtSession === 'function') setCmtSession('leader', role.slice(4));
+    return;
+  }
+
+  // Admin / core-team scopes — every module back to admin
+  resetOthers(null);
+
   const roleTitle = role === 'admin' ? 'Super Admin (Full Platform)' : role === 'pooja_manager' ? 'Pooja Manager' : role === 'accountant' ? 'Temple Accountant' : 'Parking & Operations Lead';
   showToast(`Context switched to: ${roleTitle}`);
 
@@ -140,180 +197,12 @@ function changeRoleScope(role) {
   }
 }
 
-// Multilingual Translation Dictionary (English, Hindi, Gujarati)
-const i18n = {
-  en: {
-    temple_name: "Shri Visat Meldi Mata Mandir",
-    temple_loc: "Sanand, Gujarat Platform",
-    sub_tagline: "Sanand, Gujarat — Central Management Platform",
-    sign_in: "🔐 Sign In",
-    search_placeholder: "Search devotees, receipts, poojas...",
-    
-    // Navigation
-    nav_main: "Main Navigation",
-    nav_ops: "Platform & Operations",
-    nav_dashboard: "Dashboard Launcher",
-    nav_puja: "🪔 Pooja & Seva",
-    nav_donations: "💰 Donations",
-    nav_devotees: "👥 Devotees",
-    nav_committees: "🏛️ Committee / Samaj",
-    nav_teams: "👷 Staff & Teams",
-    nav_events: "📅 Events",
-    nav_inventory: "📦 Inventory",
-    nav_expenses: "💸 Expenses",
-    nav_visits: "🙏 Bappa / Bhuvaji Visits",
-    nav_calendar: "🗓️ Unified Calendar",
-    nav_reports: "📊 Reports",
-    nav_settings: "⚙️ Settings",
-    nav_admin: "🛡️ Security & Audit",
 
-    // Banner & KPIs
-    jai_maa: "Jai Shri Visat Meldi Mataji 🙏",
-    kpi_seva: "Today's Seva Bookings",
-    kpi_donations: "Today's Donations",
-    kpi_devotees: "Registered Devotees",
-    kpi_visits: "Temple Visits Today",
-    quick_actions: "Operational Quick Actions",
-    modules_launcher: "Management Modules Launcher",
-
-    // Quick Action Buttons
-    action_book_seva: "Book Seva",
-    action_record_donation: "Record Donation",
-    action_add_devotee: "Add Devotee",
-    action_add_expense: "Add Expense",
-    action_qr_badge: "QR Badge",
-    action_events: "Events",
-    action_inventory: "Inventory",
-    action_reports: "Reports",
-
-    // Mobile Nav
-    mob_home: "Home",
-    mob_seva: "Seva",
-    mob_donations: "Donations",
-    mob_devotees: "Devotees",
-    mob_more: "More"
-  },
-  hi: {
-    temple_name: "श्री विसात मेलडी माता मंदिर",
-    temple_loc: "साणंद, गुजरात प्लेटफॉर्म",
-    sub_tagline: "साणंद, गुजरात — केंद्रीय प्रबंधन मंच",
-    sign_in: "🔐 साइन इन करें",
-    search_placeholder: "श्रद्धालु, रसीद, पूजा खोजें...",
-    
-    // Navigation
-    nav_main: "मुख्य नेविगेशन",
-    nav_ops: "मंच और संचालन",
-    nav_dashboard: "डैशबोर्ड लॉन्चर",
-    nav_puja: "🪔 पूजा और सेवा",
-    nav_donations: "💰 दान प्रबंधन",
-    nav_devotees: "👥 श्रद्धालु पंजी",
-    nav_committees: "🏛️ समिति / समाज",
-    nav_teams: "👷 स्टाफ एवं टीम",
-    nav_events: "📅 कार्यक्रम / उत्सव",
-    nav_inventory: "📦 इन्वेंट्री प्रबंधन",
-    nav_expenses: "💸 खर्च प्रबंधन",
-    nav_visits: "🙏 बाप्पा / भुवाजी यात्रा",
-    nav_calendar: "🗓️ एकीकृत कैलेंडर",
-    nav_reports: "📊 रिपोर्ट्स",
-    nav_settings: "⚙️ सेटिंग्स",
-    nav_admin: "🛡️ सुरक्षा एवं ऑडिट",
-
-    // Banner & KPIs
-    jai_maa: "जय श्री विसात मेलडी माताजी 🙏",
-    kpi_seva: "आज की सेवा बुकिंग",
-    kpi_donations: "आज का कुल दान",
-    kpi_devotees: "पंजीकृत श्रद्धालु",
-    kpi_visits: "आज के मंदिर दर्शन",
-    quick_actions: "त्वरित संचालन कार्य",
-    modules_launcher: "प्रबंधन मॉड्यूल लॉन्चर",
-
-    // Quick Action Buttons
-    action_book_seva: "सेवा बुक करें",
-    action_record_donation: "दान रसीद काटें",
-    action_add_devotee: "श्रद्धालु जोड़ें",
-    action_add_expense: "खर्च दर्ज करें",
-    action_qr_badge: "क्यूआर बैज",
-    action_events: "कार्यक्रम",
-    action_inventory: "सामग्री सूची",
-    action_reports: "रिपोर्ट्स",
-
-    // Mobile Nav
-    mob_home: "होम",
-    mob_seva: "सेवा",
-    mob_donations: "दान",
-    mob_devotees: "श्रद्धालु",
-    mob_more: "अन्य"
-  },
-  gu: {
-    temple_name: "શ્રી વિસાત મેલડી માતા મંદિર",
-    temple_loc: "સાણંદ, ગુજરાત પ્લેટફોર્મ",
-    sub_tagline: "સાણંદ, ગુજરાત — સેન્ટ્રલ મેનેજમેન્ટ પ્લેટફોર્મ",
-    sign_in: "🔐 સાઇન ઇન કરો",
-    search_placeholder: "શ્રદ્ધાળુ, પહોંચ, પૂજા શોધો...",
-    
-    // Navigation
-    nav_main: "મુખ્ય નેવિગેશન",
-    nav_ops: "પ્લેટફોર્મ અને કામગીરી",
-    nav_dashboard: "ડેશબોર્ડ લૉન્ચર",
-    nav_puja: "🪔 પૂજા અને સેવા",
-    nav_donations: "💰 દાન મંડળ",
-    nav_devotees: "👥 શ્રદ્ધાળુ રજીસ્ટર",
-    nav_committees: "🏛️ સમિતિ / સમાજ",
-    nav_teams: "👷 ટીમ અને સ્વયંસેવકો",
-    nav_events: "📅 ધાર્મિક ઉત્સવો",
-    nav_inventory: "📦 ઈન્વેન્ટરી સ્ટોક",
-    nav_expenses: "💸 ખર્ચ હિસાબ",
-    nav_visits: "🙏 બાપ્પા / ભુવાજી પધરામણી",
-    nav_calendar: "🗓️ સંકલિત કેલેન્ડર",
-    nav_reports: "📊 રિપોર્ટ્સ",
-    nav_settings: "⚙️ સેટિંગ્સ",
-    nav_admin: "🛡️ સુરક્ષા અને ઓડિટ",
-
-    // Banner & KPIs
-    jai_maa: "જય શ્રી વિસાત મેલડી માતાજી 🙏",
-    kpi_seva: "આજની સેવા બુકિંગ",
-    kpi_donations: "આજનું કુલ દાન",
-    kpi_devotees: "નોંધાયેલ શ્રદ્ધાળુઓ",
-    kpi_visits: "આજના મંદિર દર્શન",
-    quick_actions: "ઝડપી કાર્યો",
-    modules_launcher: "મેનેજમેન્ટ મોડ્યુલ્સ લૉન્ચર",
-
-    // Quick Action Buttons
-    action_book_seva: "સેવા બુક કરો",
-    action_record_donation: "દાન પહોંચ નોંધો",
-    action_add_devotee: "શ્રદ્ધાળુ ઉમેરો",
-    action_add_expense: "ખર્ચ નોંધો",
-    action_qr_badge: "QR બેજ",
-    action_events: "ઉત્સવો",
-    action_inventory: "સ્ટોક યાદી",
-    action_reports: "રિપોર્ટ્સ",
-
-    // Mobile Nav
-    mob_home: "હોમ",
-    mob_seva: "સેવા",
-    mob_donations: "દાન",
-    mob_devotees: "શ્રદ્ધાળુઓ",
-    mob_more: "વધુ"
-  }
-};
-
+// Trilingual layer lives in i18n.js (window.setLanguage / t / tData).
+// This wrapper keeps older callers working and syncs state.currentLang.
 function changeLanguage(lang) {
   state.currentLang = lang;
-  const dict = i18n[lang] || i18n['en'];
-  
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (dict[key]) {
-      if (el.tagName === 'INPUT') {
-        el.setAttribute('placeholder', dict[key]);
-      } else {
-        el.textContent = dict[key];
-      }
-    }
-  });
-
-  const langNames = { en: 'English', hi: 'हिन्दी (Hindi)', gu: 'ગુજરાતી (Gujarati)' };
-  showToast(`Language switched to: ${langNames[lang]}`);
+  if (typeof setLanguage === 'function') setLanguage(lang);
 }
 
 // Devotees Table Renderer & Filter
@@ -376,28 +265,7 @@ function filterDevotees() {
   if (label) label.innerText = `Showing ${filtered.length} Devotees`;
 }
 
-// Donations Table Renderer
-function renderDonationsTable() {
-  const tbody = document.getElementById('donationsTableBody');
-  if (!tbody) return;
-  tbody.innerHTML = '';
-
-  state.donations.forEach(don => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><strong>${don.receipt}</strong></td>
-      <td>${don.name}</td>
-      <td>${don.category}</td>
-      <td><span class="badge badge-maroon">${don.mode}</span></td>
-      <td>${don.date}</td>
-      <td><strong>₹${don.amount.toLocaleString('en-IN')}</strong></td>
-      <td>
-        <button class="btn btn-outline" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="openReceiptViewer('${don.receipt}', '${don.name}', ${don.amount}, '${don.category}')">View Receipt</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
+// Donations are handled by the Donations module (donations*.js).
 
 // Inventory Table Renderer
 function renderInventoryTable() {
@@ -478,36 +346,6 @@ function handleSaveDevotee(e) {
   showToast(`Devotee ${name} registered successfully!`);
 }
 
-function handleSaveDonation(e) {
-  e.preventDefault();
-  const name = document.getElementById('inputDonorName').value;
-  const amount = parseInt(document.getElementById('inputDonationAmount').value);
-  const category = document.getElementById('inputDonationCategory').value;
-  const mode = document.getElementById('inputPaymentMode').value;
-
-  const newReceipt = `#REC-${100 + state.donations.length + 1}`;
-  const newDonation = {
-    receipt: newReceipt,
-    name, category, mode, date: '05 Sept 2026', amount
-  };
-
-  state.donations.unshift(newDonation);
-  renderDonationsTable();
-  closeModal('modalRecordDonation');
-  e.target.reset();
-  openReceiptViewer(newReceipt, name, amount, category);
-  showToast(`Donation of ₹${amount.toLocaleString('en-IN')} recorded!`);
-}
-
-function handleSavePuja(e) {
-  e.preventDefault();
-  const pujaName = document.getElementById('inputPujaType').value;
-  const devotee = document.getElementById('inputPujaDevotee').value;
-  closeModal('modalSchedulePuja');
-  e.target.reset();
-  showToast(`Seva '${pujaName}' booked for ${devotee}!`);
-}
-
 function handleSaveExpense(e) {
   e.preventDefault();
   const title = document.getElementById('inputExpenseTitle').value;
@@ -557,31 +395,6 @@ function handleLogin(e) {
   e.preventDefault();
   closeModal('modalLogin');
   showToast('Signed in successfully!');
-}
-
-// Official 80G Receipt Generator Modal
-function openReceiptViewer(receiptNo, donorName, amount, category) {
-  const container = document.getElementById('receiptContent');
-  if (!container) return;
-
-  container.innerHTML = `
-    <div style="text-align: center; margin-bottom: 1rem;">
-      <h2 style="font-family: var(--font-heading); color: var(--primary-maroon); margin: 0; font-size: 1.35rem;">श्री विsat मेलडी माता मंदिर</h2>
-      <p style="font-size: 0.82rem; color: var(--muted-brown);">Sanand, Gujarat | Official Donation Receipt</p>
-    </div>
-    <hr style="border: 0; border-top: 1px dashed var(--warm-border); margin: 0.85rem 0;">
-    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.5rem;">
-      <span>Receipt No: <strong>${receiptNo}</strong></span>
-      <span>Date: <strong>05 Sept 2026</strong></span>
-    </div>
-    <div style="font-size: 0.9rem; margin-bottom: 0.4rem;">Received with thanks from: <strong>${donorName}</strong></div>
-    <div style="font-size: 0.9rem; margin-bottom: 0.4rem;">Donation Category: <strong>${category}</strong></div>
-    <div style="font-size: 1.3rem; font-weight: 800; color: var(--primary-maroon); margin: 0.85rem 0; padding: 0.6rem; background: #FFF; border-radius: 6px; text-align: center; border: 1px solid var(--warm-border);">
-      Sum of Rupees: ₹${amount.toLocaleString('en-IN')} /-
-    </div>
-    <div style="font-size: 0.75rem; color: var(--muted-brown); text-align: center;">Tax Exempt under Sec 80G | Authorised Trustee Signature</div>
-  `;
-  openModal('modalReceiptViewer');
 }
 
 function openBadgeGeneratorModal() {
@@ -709,38 +522,8 @@ function initCharts() {
   }
 }
 
-// Calendar Grid Renderer
-function renderCalendar() {
-  const grid = document.getElementById('calendarGrid');
-  if (!grid) return;
-
-  grid.innerHTML = '';
-  for (let i = 1; i <= 30; i++) {
-    const cell = document.createElement('div');
-    cell.style.cssText = `
-      padding: 0.75rem 0.25rem;
-      background: var(--warm-ivory);
-      border: 1px solid var(--warm-border);
-      border-radius: 6px;
-      font-size: 0.8rem;
-      min-height: 52px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      cursor: pointer;
-    `;
-    cell.innerHTML = `<strong>${i}</strong>`;
-
-    if (i === 15 || i === 22 || i === 28) {
-      cell.style.background = '#FFF5EC';
-      cell.style.borderColor = 'var(--saffron)';
-      cell.innerHTML += `<span style="font-size: 0.65rem; color: var(--saffron); font-weight:800;">🪔 Seva</span>`;
-    }
-
-    cell.onclick = () => showToast(`Selected Date: ${i} September 2026`);
-    grid.appendChild(cell);
-  }
-}
+// The Unified Calendar is rendered by calendar.js into #calendarRoot.
+function renderCalendar() { if (typeof renderUnifiedCalendar === 'function') renderUnifiedCalendar(); }
 
 // Mandala Geometric SVG Decorator
 function injectMandalaDecorations() {

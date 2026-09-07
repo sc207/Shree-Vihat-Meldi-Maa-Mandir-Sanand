@@ -1,0 +1,172 @@
+/* ============================================================
+   EVENTS — MODALS, FORMS & CRUD
+   ============================================================ */
+
+function evTypeOptions(sel) {
+  return `<option value="">— ${window.t('ev_select_type', 'Select type')} —</option>` +
+    EV.eventTypes.map(t => `<option value="${t.id}" ${t.id === sel ? 'selected' : ''}>${esc((t.icon || '') + ' ' + t.name)}</option>`).join('');
+}
+function evInchargeOptions(sel) {
+  return `<option value="">— ${window.t('ev_select_incharge', 'Select in-charge')} —</option>` +
+    EV.incharges.map(i => `<option value="${i.id}" ${i.id === sel ? 'selected' : ''}>${esc(i.name)} · ${esc(i.mobile || '')}</option>`).join('');
+}
+function evAccentOptions(sel) {
+  return EV.accentPalette.map(a => `<option value="${a.hex}" ${a.hex === sel ? 'selected' : ''}>${esc(a.name)}</option>`).join('');
+}
+
+function evDayRowsHTML(list) {
+  const rows = (list && list.length ? list : [{ date: evToday(), startTime: '18:00', endTime: '22:00' }]);
+  return rows.map(d => `
+    <div class="pj-session-row">
+      <input class="form-input ev-day-date" type="date" value="${esc(d.date || '')}">
+      <input class="form-input ev-day-start" type="time" value="${esc(d.startTime || '18:00')}">
+      <input class="form-input ev-day-end" type="time" value="${esc(d.endTime || '22:00')}">
+      <button class="btn btn-outline mg-btn-xs mg-btn-danger" type="button" onclick="evRemoveDayRow(this)">✕</button>
+    </div>`).join('');
+}
+function evRenderDayRows(list) { const b = document.getElementById('evDayRows'); if (b) b.innerHTML = evDayRowsHTML(list); }
+function evAddDayRow() { document.getElementById('evDayRows').insertAdjacentHTML('beforeend', evDayRowsHTML([{ date: evToday(), startTime: '18:00', endTime: '22:00' }])); }
+function evRemoveDayRow(btn) {
+  if (document.querySelectorAll('#evDayRows .pj-session-row').length <= 1) { evToast(window.t('ev_need_day', 'At least one day is required.')); return; }
+  btn.closest('.pj-session-row').remove();
+}
+function onEventTypeChange() {
+  const t = evTypeById(document.getElementById('evFieldType').value);
+  const n = document.getElementById('evFieldName');
+  if (t && !n.value.trim()) n.value = t.name;
+}
+
+function openAddEvent() {
+  EV.editingEventId = null;
+  document.getElementById('eventFormTitle').textContent = window.t('ev_add', 'Add Event');
+  document.getElementById('eventFormSubmitBtn').textContent = window.t('ev_add', 'Add Event');
+  document.getElementById('formEvent').reset();
+  document.getElementById('evFieldType').innerHTML = evTypeOptions('');
+  document.getElementById('evFieldIncharge').innerHTML = evInchargeOptions('');
+  document.getElementById('evFieldAccent').innerHTML = evAccentOptions(EV.accentPalette[0].hex);
+  evRenderDayRows([]);
+  openModal('modalEvent');
+}
+function openEditEvent(id) {
+  const e = eventById(id); if (!e) return;
+  EV.editingEventId = id;
+  document.getElementById('eventFormTitle').textContent = window.t('ev_edit', 'Edit Event');
+  document.getElementById('eventFormSubmitBtn').textContent = window.t('save');
+  document.getElementById('evFieldType').innerHTML = evTypeOptions(e.typeId);
+  document.getElementById('evFieldIncharge').innerHTML = evInchargeOptions(e.inChargeId);
+  document.getElementById('evFieldAccent').innerHTML = evAccentOptions(e.color);
+  document.getElementById('evFieldName').value = e.name;
+  document.getElementById('evFieldVenue').value = e.venue || '';
+  document.getElementById('evFieldFootfall').value = e.expectedFootfall || '';
+  document.getElementById('evFieldBudget').value = e.budget || '';
+  document.getElementById('evFieldNotes').value = e.notes || '';
+  evRenderDayRows(evDays(e));
+  openModal('modalEvent');
+}
+function handleSaveEvent(ev) {
+  ev.preventDefault();
+  const typeId = document.getElementById('evFieldType').value;
+  const name = document.getElementById('evFieldName').value.trim();
+  if (!name) { evToast(window.t('ev_need_name', 'Event name is required.')); return; }
+  if (!typeId) { evToast(window.t('ev_need_type', 'Select an event type.')); return; }
+  const days = Array.from(document.querySelectorAll('#evDayRows .pj-session-row')).map(r => ({
+    date: r.querySelector('.ev-day-date').value,
+    startTime: r.querySelector('.ev-day-start').value,
+    endTime: r.querySelector('.ev-day-end').value
+  })).filter(d => d.date);
+  if (!days.length) { evToast(window.t('ev_need_day', 'Add at least one day.')); return; }
+  for (const d of days) if (d.endTime && d.startTime && d.endTime <= d.startTime) { evToast(window.t('ev_end_after', 'End time must be after start time.')); return; }
+
+  const payload = {
+    typeId, name, days,
+    venue: document.getElementById('evFieldVenue').value.trim(),
+    inChargeId: document.getElementById('evFieldIncharge').value,
+    expectedFootfall: parseInt(document.getElementById('evFieldFootfall').value, 10) || 0,
+    budget: parseInt(document.getElementById('evFieldBudget').value, 10) || 0,
+    color: document.getElementById('evFieldAccent').value,
+    notes: document.getElementById('evFieldNotes').value.trim()
+  };
+  if (EV.editingEventId) {
+    Object.assign(eventById(EV.editingEventId), payload);
+    evLog(EV.editingEventId, window.t('ev_updated', 'Event updated'));
+    evToast(name + ' — ' + window.t('save') + ' ✓');
+  } else {
+    const id = evNextId('EVN', EV.events, 3);
+    EV.events.push(Object.assign({ id, status: 'planning', createdDate: evToday() }, payload));
+    evLog(id, window.t('ev_created', 'Event created'));
+    evToast(name + ' — ' + window.t('ev_created', 'created'));
+  }
+  EV.editingEventId = null;
+  const f = days.slice().sort((a, b) => a.date.localeCompare(b.date))[0];
+  if (f) { const p = f.date.split('-').map(Number); EV.calendarYear = p[0]; EV.calendarMonth = p[1] - 1; }
+  closeModal('modalEvent');
+  renderEvents();
+}
+function confirmDeleteEvent(id) {
+  const e = eventById(id); if (!e) return;
+  openConfirm({
+    title: window.t('ev_delete', 'Delete Event'), danger: true,
+    body: `<p><strong>${esc(e.name)}</strong></p>`,
+    confirmLabel: window.t('delete'),
+    onConfirm: () => {
+      EV.events = EV.events.filter(x => x.id !== id);
+      EV.activity = EV.activity.filter(a => a.eventId !== id);
+      if (EV.activeEventId === id) { EV.activeEventId = null; EV.view = 'directory'; }
+      evToast(window.t('ev_deleted', 'Event deleted.'));
+      renderEvents();
+    }
+  });
+}
+
+/* ---- event type catalog ---- */
+function openAddEventType() {
+  EV.editingTypeId = null;
+  document.getElementById('evTypeFormTitle').textContent = window.t('ev_add_type', 'Add Event Type');
+  document.getElementById('formEventType').reset();
+  openModal('modalEventType');
+}
+function openEditEventType(id) {
+  const t = evTypeById(id); if (!t) return;
+  EV.editingTypeId = id;
+  document.getElementById('evTypeFormTitle').textContent = window.t('ev_edit_type', 'Edit Event Type');
+  document.getElementById('evTypeFieldName').value = t.name;
+  document.getElementById('evTypeFieldCategory').value = t.category || '';
+  document.getElementById('evTypeFieldIcon').value = t.icon || '';
+  document.getElementById('evTypeFieldDesc').value = t.description || '';
+  openModal('modalEventType');
+}
+function handleSaveEventType(ev) {
+  ev.preventDefault();
+  const name = document.getElementById('evTypeFieldName').value.trim();
+  if (!name) { evToast(window.t('ev_need_name', 'Name is required.')); return; }
+  const dupe = EV.eventTypes.find(t => t.name.toLowerCase() === name.toLowerCase() && t.id !== EV.editingTypeId);
+  if (dupe) { evToast(window.t('ev_type_exists', 'That type already exists.')); return; }
+  const payload = {
+    name,
+    category: document.getElementById('evTypeFieldCategory').value.trim(),
+    icon: document.getElementById('evTypeFieldIcon').value.trim() || '📅',
+    description: document.getElementById('evTypeFieldDesc').value.trim()
+  };
+  if (EV.editingTypeId) Object.assign(evTypeById(EV.editingTypeId), payload);
+  else EV.eventTypes.push(Object.assign({ id: evNextId('EVT', EV.eventTypes, 3) }, payload));
+  EV.editingTypeId = null;
+  closeModal('modalEventType');
+  evToast(window.t('save') + ' ✓');
+  renderEvents();
+}
+function confirmDeleteEventType(id) {
+  const used = EV.events.filter(e => e.typeId === id).length;
+  if (used) { evToast(used + ' ' + window.t('ev_type_in_use', 'event(s) use this type.')); return; }
+  openConfirm({
+    title: window.t('ev_delete_type', 'Delete Event Type'), danger: true,
+    body: `<p><strong>${esc((evTypeById(id) || {}).name || '')}</strong></p>`,
+    confirmLabel: window.t('delete'),
+    onConfirm: () => { EV.eventTypes = EV.eventTypes.filter(t => t.id !== id); evToast(window.t('ev_type_deleted', 'Type deleted.')); renderEvents(); }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!document.getElementById('eventsRoot')) return;
+  renderEvents();
+  if (typeof onLanguageChange === 'function') onLanguageChange(() => renderEvents());
+});

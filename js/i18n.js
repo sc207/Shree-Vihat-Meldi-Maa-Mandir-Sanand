@@ -1,0 +1,352 @@
+/* ============================================================
+   TRILINGUAL LAYER — English / हिन्दी / ગુજરાતી
+   Shri Vihat Meldi Mata Mandir
+   ------------------------------------------------------------
+   Loaded FIRST so t() / tData() are available everywhere.
+   - Data ENTRY is always English (forms are not translated).
+   - Data DISPLAY switches language: UI chrome via t(), and a
+     fixed vocabulary of names (pooja types, categories,
+     statuses, committees, cities, roles) via tData().
+   - changeLanguage() re-applies [data-i18n*] attributes and
+     calls every hook registered with onLanguageChange() so the
+     dynamic modules (Pooja, Management) re-render.
+   ============================================================ */
+
+(function () {
+  var LS_KEY = 'svmmm_lang';
+  var LANGS = ['en', 'hi', 'gu'];
+
+  var UI = {
+    en: {
+      /* generic actions / words reused everywhere */
+      add:'Add', edit:'Edit', delete:'Delete', save:'Save', cancel:'Cancel', close:'Close',
+      open:'Open', view:'View', back:'Back', remove:'Remove', confirm:'Confirm', search:'Search',
+      export:'Export', print:'Print', preview:'Preview', reopen:'Reopen', yes:'Yes', no:'No',
+      active:'Active', inactive:'Inactive', status:'Status', name:'Name', mobile:'Mobile',
+      city:'City', state:'State', role:'Role', notes:'Notes', date:'Date', time:'Time',
+      venue:'Venue', actions:'Actions', all:'All', none:'None', today:'Today', upcoming:'Upcoming',
+      completed:'Completed', pending:'Pending',
+
+      temple_name:'Shri Vihat Meldi Mata Mandir',
+      temple_loc:'Sanand, Gujarat',
+      sub_tagline:'Sanand, Gujarat — Central Management Platform',
+      sign_in:'🔐 Sign In', sign_out:'Sign Out', administrator:'Administrator',
+      search_placeholder:'Search devotees, receipts, poojas...',
+
+      nav_main:'Main Navigation', nav_ops:'Platform & Operations', nav_grp_overview:'Overview', nav_grp_seva:'Seva & Events', nav_grp_people:'People & Governance', nav_grp_resources:'Donations & Resources', nav_grp_admin:'Administration', rep_downloads:'Downloadable registers', set_founder:'Temple Founder / મંદિર સ્થાપક', set_head:'Temple Head / મંદિર પ્રમુખ', exp_word:'Export',
+      nav_dashboard:'🏠 Dashboard', nav_puja:'🪔 Pooja & Seva', nav_donations:'💰 Donations',
+      nav_devotees:'👥 Devotees', nav_management:'🗂️ Management Apps',
+      nav_committees:'🏛️ Committee / Samaj', nav_teams:'👷 Staff & Teams', nav_events:'📅 Events',
+      nav_inventory:'📦 Inventory', nav_expenses:'💸 Expenses', nav_visits:'🙏 Bappa / Bhuvaji Visits',
+      nav_calendar:'🗓️ Unified Calendar', nav_reports:'📊 Reports', nav_settings:'⚙️ Settings',
+      nav_admin:'🛡️ Accounts & Access',
+
+      /* dashboard */
+      banner_invoke:'ૐ નમઃ શિવાય',
+      banner_headline:'જય શ્રી વિહત મેલડી માતાજી',
+      banner_tagline:'માતાજીની કૃપા, ભક્તોની શ્રદ્ધા',
+      banner_khamma:'ખમ્મા માડી, ખમ્મા 🙏',
+      welcome_back:'Welcome back',
+      kpi_seva:"Today's Seva Bookings", kpi_donations:"Today's Donations",
+      kpi_devotees:'Registered Devotees', kpi_visits:'Temple Visits Today',
+      quick_actions:'Operational Quick Actions', modules_launcher:'Management Modules Launcher',
+      todays_overview:"Today's Overview", recent_activity:'Recent Activity',
+
+      action_book_seva:'Book Seva', action_record_donation:'Record Donation',
+      action_add_devotee:'Add Devotee', action_add_expense:'Add Expense',
+      action_qr_badge:'QR Badge', action_events:'Events', action_inventory:'Inventory',
+      action_reports:'Reports',
+
+      mob_home:'Home', mob_seva:'Seva', mob_donations:'Donations', mob_devotees:'Devotees',
+      mob_management:'Teams', mob_more:'More',
+
+      /* pooja module */
+      pj_title:'Pooja & Seva', pj_my_title:'My Poojas',
+      pj_sub_admin:'Create pooja events, record sevarthis, assign coordinators and print invitations',
+      pj_sub_coord:'Open a Pooja assigned to you',
+      pj_add:'Add Pooja', pj_export:'Export CSV',
+      pj_kpi_total:'Total Poojas', pj_kpi_upcoming:'Upcoming', pj_kpi_sevarthis:'Sevarthis',
+      pj_kpi_types:'Pooja Types',
+      pj_open_ws:'Open a Pooja Workspace', pj_directory:'Pooja Directory',
+      pj_people_registry:'Guests & Pandits', pj_type_catalog:'Pooja Type Master Catalog',
+      pj_tab_overview:'Overview', pj_tab_sevarthi:'Sevarthi', pj_tab_invitation:'Invitation',
+      pj_tab_calendar:'Calendar', pj_tab_settings:'Settings', pj_tab_activity:'Activity',
+      pj_sevarthi_records:'Sevarthi Records',
+      pj_sevarthi_sub:'Devotees who have taken the seva of this pooja',
+      pj_add_sevarthi:'Add Sevarthi', pj_add_guest:'Add Guest / Pandit',
+      pj_new_guest:'+ Add new Guest / Pandit',
+      pj_session_schedule:'Session Schedule', pj_manage_sessions:'Manage Sessions',
+      pj_pooja_details:'Pooja Details', pj_guests_pandits:'Guests & Pandits',
+      pj_invitation_card:'Invitation Card',
+      pj_invitation_sub:'Auto-filled from the pooja. Tweak the copy and style, then print or save as PDF (A5).',
+      pj_calendar:'Pooja Calendar', pj_settings:'Pooja Settings', pj_activity:'Activity Log',
+      pj_mark_completed:'✓ Mark Completed', pj_mark_extended:'Mark Extended',
+      pj_cancel_pooja:'Cancel Pooja', pj_reopen_pooja:'Reopen Pooja',
+      pj_schedule:'Schedule', pj_next_session:'Next Session', pj_days_to_go:'Days To Go',
+      pj_people:'People', pj_coordinator:'Coordinator', pj_sevarthi:'Sevarthi',
+      pj_type:'Type', pj_single_event:'Single event', pj_multi_session:'Multi-session',
+      pj_no_sevarthi:'No sevarthi yet', pj_no_guests:'No guests or pandits added.',
+      pj_today_is:'Today is',
+      pj_status_auto_note:'status updates automatically from the session dates unless you set it here.',
+
+      pj_st_planned:'Upcoming', pj_st_today:'Happening Today', pj_st_completed:'Completed',
+      pj_st_extended:'Extended', pj_st_cancelled:'Cancelled',
+
+      don_title:"Donations", don_sub:"Cash & in-kind offerings, 80G receipts and Dhanyavaad certificates", don_record:"Record Donation", don_edit:"Edit Donation", don_kpi_cash:"Cash This Month", don_kpi_kind:"In-Kind This Month", don_kpi_kind_meta:"Estimated value received", don_kpi_donors:"Registered Donors", don_kpi_donors_meta:"Individuals, companies & trusts", don_kpi_pledged:"Pledged", don_kpi_pledged_meta:"Awaiting realisation", don_register:"Donation Register", don_donor_registry:"Donor Registry", don_categories:"Donation Categories", don_category:"Category", don_add_donor:"Add Donor", don_add_category:"Add Category", don_edit_category:"Edit Category", don_edit_donor:"Edit Donor", don_receipt_no:"Receipt No", don_donor:"Donor", don_given:"Donation", don_value:"Value", don_donor_type:"Type", don_lifetime:"lifetime", don_received:"Received", don_pledged:"Pledged", don_receipt:"Receipt", don_certificate:"Certificate", don_est_value:"est. value", don_none:"No donations match.", don_no_donors:"No donors on record.", don_records:"record(s)", don_unused:"Not used yet", don_kind:"In-kind", don_cash:"Cash", don_select_donor:"Select a donor", don_no_pan:"PAN not on file", don_history:"Donation History", don_contact_person:"Contact person", don_committee:"Committee / Samaj", don_save_receipt:"Save & Issue Receipt", don_saved:"Donation recorded", don_updated:"Donation updated", don_deleted:"Donation deleted", don_delete_title:"Delete Donation", don_delete_body:"Delete the record for", don_pick_donor:"Please choose a donor.", don_pick_category:"Please choose a category.", don_need_item:"Describe the article donated.", don_need_value:"Enter an estimated value.", don_need_amount:"Enter the donation amount.", don_donor_exists:"A donor with this mobile already exists", don_edit_instead:"Open that record to edit it.", don_need_name:"First and last name are required.", don_need_org:"Organisation name is required.", don_need_mobile:"Mobile must be 10 digits.", don_bad_pan:"PAN format looks wrong (ABCDE1234F).", don_donor_added:"Donor added", don_donor_updated:"Donor updated", don_donor_deleted:"Donor deleted", don_delete_donor:"Delete Donor", don_delete_donor_body:"Delete the donor", don_donor_in_use:"{n} donation(s) reference this donor - cannot delete.", don_need_cat_name:"Category name is required.", don_cat_exists:"That category name already exists.", don_cat_added:"Category added", don_cat_updated:"Category updated", don_cat_deleted:"Category deleted", don_delete_category:"Delete Category", don_delete_cat_body:"Delete the category", don_cat_in_use:"{n} donation(s) use this category.", don_receipt_title:"Official Temple Receipt (80G)", don_cert_title:"Dhanyavaad Certificate", call:"Call", cmt_title:"Committee / Samaj", cmt_my_title:"My Committees", cmt_all:"All Committees", cmt_sub_admin:"Committees for the temple construction - leaders, members, meetings and attendance", cmt_sub_lead:"Open a committee assigned to you", cmt_add:"Add Committee", cmt_create:"Create Committee", cmt_edit:"Edit Committee", cmt_delete:"Delete Committee", cmt_kpi_total:"Committees", cmt_kpi_total_meta:"Across the platform", cmt_kpi_members:"Members", cmt_kpi_members_meta:"Registered across committees", cmt_kpi_meetings:"Meetings This Month", cmt_kpi_attendance:"Avg Attendance", cmt_kpi_attendance_meta:"This month", cmt_none:"No committee assigned", cmt_none_admin:"Create your first committee.", cmt_none_lead:"No committee has been assigned to you yet.", cmt_open_ws:"Open a Committee Workspace", cmt_leader:"Leader", cmt_members:"Members", cmt_attendance:"Attendance", cmt_next:"Next", cmt_no_meeting:"No meeting scheduled", cmt_expected:"Expected", cmt_seats:"seats", cmt_active_members:"Active", cmt_tab_overview:"Overview", cmt_tab_members:"Members", cmt_tab_meetings:"Meetings", cmt_tab_calendar:"Calendar", cmt_tab_whatsapp:"WhatsApp", cmt_tab_settings:"Settings", cmt_tab_activity:"Activity", cmt_add_member:"Add Member", cmt_edit_member:"Edit Member", cmt_schedule:"Schedule Meeting", cmt_edit_meeting:"Edit Meeting", cmt_meeting:"Meeting", cmt_meetings_word:"Meetings", cmt_meetings_sub:"Schedule meetings and mark attendance", cmt_upcoming_meetings:"Upcoming Meetings", cmt_completed_meetings:"Completed Meetings", cmt_no_upcoming:"No upcoming meetings.", cmt_no_completed:"No completed meetings yet.", cmt_no_meetings:"No meetings assigned.", cmt_no_meetings2:"No meetings scheduled yet.", cmt_no_members:"No members yet.", cmt_no_activity:"No activity.", cmt_no_drafts:"No drafts yet.", cmt_joined:"joined", cmt_also_in:"Also in", cmt_deactivate:"Deactivate", cmt_activate:"Activate", cmt_present:"Present", cmt_absent:"Absent", cmt_not_marked:"Not marked", cmt_invited:"Invited", cmt_scheduled:"Scheduled", cmt_running:"Running", cmt_done:"Completed", cmt_agenda:"Agenda", cmt_attendance_list:"Attendance List", cmt_attendance_history:"Attendance History", cmt_all_present:"Mark All Present", cmt_all_absent:"Mark All Absent", cmt_complete:"Complete Meeting", cmt_complete_note:"Once completed, attendance becomes read-only.", cmt_meeting_done:"Meeting completed.", cmt_locked:"This meeting is completed. Attendance is read-only.", cmt_locked_short:"Locked", cmt_calendar:"Meeting Calendar", cmt_settings:"Committee Settings", cmt_settings_admin:"Full settings including leader assignment", cmt_settings_lead:"Leaders can edit committee details. Leader assignment is admin-only.", cmt_activity_log:"Activity Log", cmt_whatsapp:"WhatsApp Communication", cmt_whatsapp_sub:"Group, broadcast and reusable draft messages", cmt_group:"WhatsApp Group", cmt_group_name:"Group Name", cmt_group_link:"Group Invite Link", cmt_broadcast:"Broadcast", cmt_broadcast_name:"Broadcast Name", cmt_broadcast_link:"Broadcast Link", cmt_open_group:"Open Group", cmt_open_broadcast:"Open Broadcast", cmt_drafts:"Message Drafts", cmt_new_draft:"New Draft", cmt_edit_draft:"Edit Draft", cmt_delete_draft:"Delete Draft", cmt_draft_deleted:"Draft deleted.", cmt_updated:"Updated", cmt_copy:"Copy", cmt_send:"Send", cmt_copied:"Copied.", cmt_copied_paste:"Message copied - paste it in WhatsApp.", cmt_sent:"Message sent", cmt_no_link:"No link saved yet.", cmt_name:"Committee Name", cmt_samaj:"Samaj", cmt_expected_size:"Expected Size", cmt_colour:"Colour", cmt_purpose:"Purpose", cmt_select_leader:"Select leader", cmt_access_denied:"Access denied.", cmt_admin_only:"Only an administrator can do this.", cmt_leader_access:"Committee Leader access. You can only open:", cmt_need_name:"Name is required.", cmt_need_leader:"Assign a leader.", cmt_need_purpose:"Purpose is required.", cmt_delete_body:"This deletes the committee, its members, meetings and attendance.", cmt_created:"Committee created", cmt_deleted:"deleted", cmt_updated_by:"Committee updated by", cmt_already_member:"is already on this committee.", cmt_existing_devotee:"Existing devotee", cmt_will_link:"will be linked, not duplicated.", cmt_need_member_name:"First and last name are required.", cmt_need_mobile:"Mobile must be 10 digits.", cmt_added_word:"added", cmt_removed:"removed", cmt_deactivate_body:"They stop appearing in new meetings but history is kept.", cmt_remove_member:"Remove Member", cmt_remove_body:"Removes the committee assignment and its attendance rows. The devotee record is kept.", cmt_no_active_members:"No active members yet.", cmt_need_meeting_title:"Meeting title is required.", cmt_need_datetime:"Date and time are required.", cmt_end_after_start:"End time must be after start time.", cmt_pick_members:"Invite at least one member.", cmt_meeting_updated:"Meeting updated.", cmt_meeting_scheduled:"Meeting scheduled", cmt_delete_meeting:"Delete Meeting", cmt_meeting_deleted:"Meeting deleted.", cmt_need_draft:"Title and message are required.", cmt_no_meeting_row:"No meetings.", ev_title:"Temple Events", ev_sub:"Festivals, mahotsavs and seva programmes", ev_add:"Add Event", ev_edit:"Edit Event", ev_delete:"Delete Event", ev_deleted:"Event deleted.", ev_created:"Event created", ev_updated:"Event updated", ev_kpi_total:"Total Events", ev_kpi_total_meta:"On the calendar", ev_kpi_upcoming:"Upcoming", ev_kpi_upcoming_meta:"Still to come", ev_kpi_footfall:"Expected Footfall", ev_kpi_types:"Event Types", ev_kpi_types_meta:"Master list", ev_open_ws:"Open an Event", ev_type_catalog:"Event Type Master List", ev_type:"Type", ev_add_type:"Add Event Type", ev_edit_type:"Edit Event Type", ev_delete_type:"Delete Event Type", ev_type_exists:"That type already exists.", ev_type_in_use:"event(s) use this type.", ev_type_deleted:"Type deleted.", ev_records:"event(s)", ev_unused:"Not used yet", ev_days:"days", ev_day:"day", ev_incharge:"In-charge", ev_footfall:"Footfall", ev_budget:"Budget", ev_estimate:"Estimate", ev_schedule:"Schedule", ev_manage_days:"Manage Days", ev_notice:"Notice / Invite", ev_no_date:"No date", ev_tab_overview:"Overview", ev_tab_schedule:"Schedule", ev_tab_settings:"Settings", ev_tab_activity:"Activity", ev_st_planning:"Planning", ev_st_confirmed:"Confirmed", ev_st_ongoing:"Ongoing", ev_st_completed:"Completed", ev_st_cancelled:"Cancelled", ev_select_type:"Select type", ev_select_incharge:"Select in-charge", ev_need_name:"Event name is required.", ev_need_type:"Select an event type.", ev_need_day:"Add at least one day.", ev_end_after:"End time must be after start time.", ev_invite_line:"You are cordially invited to", vis_title:"Bappa / Bhuvaji Visits", vis_sub:"Padhramani to homes, shops and family functions - with an escort team", vis_add:"Add Visit", vis_edit:"Edit Visit", vis_delete:"Delete Visit", vis_deleted:"Visit deleted.", vis_added:"Visit added.", vis_kpi_total:"Total Visits", vis_kpi_upcoming:"Upcoming", vis_kpi_upcoming_meta:"Scheduled / confirmed", vis_kpi_pending:"Awaiting Approval", vis_kpi_pending_meta:"New requests", vis_kpi_teams:"Escort Teams", vis_kpi_teams_meta:"On the roster", vis_register:"Visit Register", vis_devotee:"Devotee", vis_purpose:"Purpose", vis_address:"Address", vis_datetime:"Date & Time", vis_escort:"Escort Team", vis_none:"No visits match.", vis_escort_ph:"Team that carries the palki & manages the visit", vis_need_name:"Devotee name is required.", vis_need_date:"Date is required.", vis_explain:"A padhramani is when Maa's murti or the Bhuvaji (the temple oracle / medium) is taken to a devotee's home, shop or family function for a blessing. The escort team is the volunteer group that carries the palki, manages the aarti thali and crowd, keeps the murti safe and handles the return journey.", vis_p_home_inauguration:"New Home / Vastu", vis_p_shop_opening:"Shop Opening", vis_p_wedding_blessing:"Wedding Blessing", vis_p_health_blessing:"Health / Recovery", vis_p_business_puja:"Business / Factory Puja", vis_p_festival_padhramani:"Festival Padhramani", vis_p_other:"Other", vis_s_requested:"Requested", vis_s_scheduled:"Scheduled", vis_s_confirmed:"Confirmed", vis_s_completed:"Completed", vis_s_cancelled:"Cancelled", cal_title:"Unified Temple Calendar", cal_sub:"Poojas, committee meetings, events, pledges and visits - all in one place", cal_next:"Next", cal_up_next:"Up Next", cal_item:"Item", cal_type:"Type", cal_nothing:"Nothing scheduled this month.", cal_poojas:"Poojas", cal_meetings:"Meetings", cal_events:"Events", cal_donations:"Pledges", cal_visits:"Visits", cal_pledge:"Pledged donation", cal_mon:"Mon", cal_tue:"Tue", cal_wed:"Wed", cal_thu:"Thu", cal_fri:"Fri", cal_sat:"Sat", cal_sun:"Sun", mg_lead:"Management Lead", mg_volunteer:"Volunteer", mg_id:"ID", pj_inv_royal:"Royal (ceremonial)", pj_inv_cream:"Cream (minimal)", pj_inv_festival:"Festival (celebratory)", pj_inv_lang_app:"Same as app", pj_inv_template:"Template", pj_inv_language:"Card Language", pj_inv_accent:"Accent Colour", pj_inv_headline:"Headline", pj_inv_line:"Invitation Line", pj_inv_blessing:"Closing Blessing", pj_inv_show_schedule:"Show full session schedule", pj_inv_show_sevarthi:"Show sevarthi name(s)", pj_inv_show_guests:"Show guests / pandits", pj_inv_save:"Save Card", pj_inv_print:"Print / Save PDF", pj_inv_sub2:"Auto-filled from the pooja. Adjust the copy, colour and language, then print or save as PDF (A5).", pj_edit_pooja:'Edit Pooja', pj_all_poojas:'All Poojas', pj_sessions_word:'sessions', dash_kpi_pooja:'Today\'s Poojas', dash_kpi_don:'Donations This Month', dash_kpi_accounts:'Authorized Accounts', dash_kpi_accounts_meta:'With platform access', dash_kpi_month:'This Month', dash_glance:'Your temple at a glance', dash_attention:'Needs attention', dash_today_temple:'Today across the temple', dash_today_area:'Today in your area', dash_today:'today', dash_quiet:'A quiet day — nothing scheduled.', dash_your_area:'Your area', dash_no_assign:'Nothing assigned to you yet.', dash_on_file:'on file', dash_items:'items', dash_vouchers:'vouchers', dash_a_pledged:'donation pledge(s) awaiting realisation', dash_a_visits:'Bhuvaji visit request(s) to approve', dash_a_sevarthi:'pooja(s) with no sevarthi recorded', dash_a_stock:'inventory item(s) low or out of stock', dash_a_attend:'committee(s) with low meeting attendance', nav_puja_s:'Pooja & Seva', nav_management_s:'Management Apps', nav_devotees_s:'Devotees', nav_inventory_s:'Inventory', nav_expenses_s:'Expenses', role_superadmin:'Super Admin', role_management_lead:'Management Lead', role_pooja_coordinator:'Pooja Coordinator', role_committee_leader:'Committee Leader', role_event_incharge:'Event In-charge', role_accountant:'Accountant', acc_title:'Accounts & Access', acc_sub:'Every authorized account, what it can open, and a live audit trail', acc_kpi_total:'Authorized Accounts', acc_kpi_total_meta:'Across all roles', acc_kpi_admin:'Super Admins', acc_kpi_admin_meta:'Full platform access', acc_kpi_leaders:'Leaders & Coordinators', acc_kpi_leaders_meta:'Scoped to their area', acc_kpi_roles:'Access Roles', acc_kpi_roles_meta:'Defined role types', acc_by_role:'Access by role', acc_can_open:'Can open', acc_everything:'everything', acc_accounts:'Accounts', acc_account_ct:'account(s)', acc_roles:'Roles', acc_signin:'Sign in as', acc_audit:'Audit Trail', acc_audit_meta:'live, merged from every module', acc_module:'Module', acc_action:'Action', acc_when:'When', rep_title:'Reports & Analytics', rep_sub:'Figures pulled live from every module for the current month', rep_export_all:'Export activity log', rep_don:'Donations (cash, month)', rep_donkind:'In-kind Value (month)', rep_exp:'Expenses (total)', rep_dev:'Registered Devotees', rep_pooja:'Poojas', rep_cmt:'Committee Attendance', rep_ev:'Events', rep_vis:'Bhuvaji Visits', set_title:'Platform Settings', set_sub:'Temple identity, language and demo data', set_identity:'Temple Identity', set_name:'Temple Name', set_loc:'Location', set_email:'Contact Email', set_phone:'Contact Phone', set_platform:'Platform', set_lang:'Default Language', set_clock:'Demo Clock', set_accounts_hint:'Manage who can access the platform in the', set_page:'page', set_reset:'Fresh load — reset all demo data', set_clock_title:'Working date & data', set_clock_sub:'Every dashboard, calendar, pooja/event status and monthly report is calculated against this date. Move it to see how records track over time.', set_clock_apply:'Apply working date', set_clock_reset:'Reset to seed date', set_clock_note:'A custom working date is active and is remembered across reloads.', set_clock_bad:'Pick a valid date.', set_clock_done:'Working date set to', set_reset_confirm:'Reload and reset all demo data?', set_saved:'Temple information saved.', teams_moved:'Staff & volunteer teams are now the Management module', teams_moved_sub:'Volunteer teams, lead assignment, volunteering schedules, attendance and badges all live in Management Apps.', teams_open:'Open Management Apps', lang_switched:'Language switched to'
+    },
+
+    hi: {
+      add:'जोड़ें', edit:'संपादित करें', delete:'हटाएँ', save:'सहेजें', cancel:'रद्द करें', close:'बंद करें',
+      open:'खोलें', view:'देखें', back:'वापस', remove:'निकालें', confirm:'पुष्टि करें', search:'खोजें',
+      export:'निर्यात', print:'प्रिंट', preview:'पूर्वावलोकन', reopen:'फिर से खोलें', yes:'हाँ', no:'नहीं',
+      active:'सक्रिय', inactive:'निष्क्रिय', status:'स्थिति', name:'नाम', mobile:'मोबाइल',
+      city:'शहर', state:'राज्य', role:'भूमिका', notes:'टिप्पणियाँ', date:'तारीख', time:'समय',
+      venue:'स्थान', actions:'क्रियाएँ', all:'सभी', none:'कोई नहीं', today:'आज', upcoming:'आगामी',
+      completed:'पूर्ण', pending:'लंबित',
+
+      temple_name:'श्री विहत मेलडी माता मंदिर',
+      temple_loc:'साणंद, गुजरात',
+      sub_tagline:'साणंद, गुजरात — केंद्रीय प्रबंधन मंच',
+      sign_in:'🔐 साइन इन करें', sign_out:'साइन आउट', administrator:'प्रशासक',
+      search_placeholder:'श्रद्धालु, रसीद, पूजा खोजें...',
+
+      nav_main:'मुख्य नेविगेशन', nav_ops:'मंच और संचालन', nav_grp_overview:'सारांश', nav_grp_seva:'सेवा एवं कार्यक्रम', nav_grp_people:'लोग एवं प्रशासन', nav_grp_resources:'दान एवं संसाधन', nav_grp_admin:'प्रशासन', rep_downloads:'डाउनलोड करने योग्य रजिस्टर', set_founder:'मंदिर संस्थापक / મંદિર સ્થાપક', set_head:'मंदिर प्रमुख / મંદિર પ્રમુખ', exp_word:'निर्यात',
+      nav_dashboard:'🏠 डैशबोर्ड', nav_puja:'🪔 पूजा और सेवा', nav_donations:'💰 दान प्रबंधन',
+      nav_devotees:'👥 श्रद्धालु पंजी', nav_management:'🗂️ प्रबंधन ऐप्स',
+      nav_committees:'🏛️ समिति / समाज', nav_teams:'👷 स्टाफ एवं टीम', nav_events:'📅 कार्यक्रम / उत्सव',
+      nav_inventory:'📦 इन्वेंट्री प्रबंधन', nav_expenses:'💸 खर्च प्रबंधन', nav_visits:'🙏 बाप्पा / भुवाजी यात्रा',
+      nav_calendar:'🗓️ एकीकृत कैलेंडर', nav_reports:'📊 रिपोर्ट्स', nav_settings:'⚙️ सेटिंग्स',
+      nav_admin:'🛡️ खाते एवं पहुँच',
+
+      banner_invoke:'ૐ નમઃ શિવાય',
+      banner_headline:'જય શ્રી વિહત મેલડી માતાજી',
+      banner_tagline:'માતાજીની કૃપા, ભક્તોની શ્રદ્ધા',
+      banner_khamma:'ખમ્મા માડી, ખમ્મા 🙏',
+      welcome_back:'वापसी पर स्वागत है',
+      kpi_seva:'आज की सेवा बुकिंग', kpi_donations:'आज का कुल दान',
+      kpi_devotees:'पंजीकृत श्रद्धालु', kpi_visits:'आज के मंदिर दर्शन',
+      quick_actions:'त्वरित संचालन कार्य', modules_launcher:'प्रबंधन मॉड्यूल लॉन्चर',
+      todays_overview:'आज का विवरण', recent_activity:'हाल की गतिविधि',
+
+      action_book_seva:'सेवा बुक करें', action_record_donation:'दान रसीद काटें',
+      action_add_devotee:'श्रद्धालु जोड़ें', action_add_expense:'खर्च दर्ज करें',
+      action_qr_badge:'क्यूआर बैज', action_events:'कार्यक्रम', action_inventory:'सामग्री सूची',
+      action_reports:'रिपोर्ट्स',
+
+      mob_home:'होम', mob_seva:'सेवा', mob_donations:'दान', mob_devotees:'श्रद्धालु',
+      mob_management:'टीम', mob_more:'अन्य',
+
+      pj_title:'पूजा और सेवा', pj_my_title:'मेरी पूजाएँ',
+      pj_sub_admin:'पूजा कार्यक्रम बनाएँ, सेवार्थी दर्ज करें, समन्वयक नियुक्त करें और निमंत्रण छापें',
+      pj_sub_coord:'आपको सौंपी गई पूजा खोलें',
+      pj_add:'पूजा जोड़ें', pj_export:'CSV निर्यात',
+      pj_kpi_total:'कुल पूजाएँ', pj_kpi_upcoming:'आगामी', pj_kpi_sevarthis:'सेवार्थी',
+      pj_kpi_types:'पूजा प्रकार',
+      pj_open_ws:'पूजा वर्कस्पेस खोलें', pj_directory:'पूजा निर्देशिका',
+      pj_people_registry:'अतिथि एवं पंडित', pj_type_catalog:'पूजा प्रकार मास्टर सूची',
+      pj_tab_overview:'सारांश', pj_tab_sevarthi:'सेवार्थी', pj_tab_invitation:'निमंत्रण',
+      pj_tab_calendar:'कैलेंडर', pj_tab_settings:'सेटिंग्स', pj_tab_activity:'गतिविधि',
+      pj_sevarthi_records:'सेवार्थी रिकॉर्ड',
+      pj_sevarthi_sub:'वे श्रद्धालु जिन्होंने इस पूजा की सेवा ली है',
+      pj_add_sevarthi:'सेवार्थी जोड़ें', pj_add_guest:'अतिथि / पंडित जोड़ें',
+      pj_new_guest:'+ नया अतिथि / पंडित जोड़ें',
+      pj_session_schedule:'सत्र समय-सारणी', pj_manage_sessions:'सत्र प्रबंधित करें',
+      pj_pooja_details:'पूजा विवरण', pj_guests_pandits:'अतिथि एवं पंडित',
+      pj_invitation_card:'निमंत्रण पत्र',
+      pj_invitation_sub:'पूजा से स्वतः भरा हुआ। पाठ और शैली बदलें, फिर प्रिंट करें या PDF (A5) सहेजें।',
+      pj_calendar:'पूजा कैलेंडर', pj_settings:'पूजा सेटिंग्स', pj_activity:'गतिविधि लॉग',
+      pj_mark_completed:'✓ पूर्ण चिह्नित करें', pj_mark_extended:'विस्तारित चिह्नित करें',
+      pj_cancel_pooja:'पूजा रद्द करें', pj_reopen_pooja:'पूजा फिर से खोलें',
+      pj_schedule:'समय-सारणी', pj_next_session:'अगला सत्र', pj_days_to_go:'शेष दिन',
+      pj_people:'लोग', pj_coordinator:'समन्वयक', pj_sevarthi:'सेवार्थी',
+      pj_type:'प्रकार', pj_single_event:'एकल कार्यक्रम', pj_multi_session:'बहु-सत्र',
+      pj_no_sevarthi:'अभी कोई सेवार्थी नहीं', pj_no_guests:'कोई अतिथि या पंडित नहीं जोड़ा गया।',
+      pj_today_is:'आज है',
+      pj_status_auto_note:'जब तक आप यहाँ निर्धारित न करें, स्थिति सत्र तिथियों से स्वतः अद्यतन होती है।',
+
+      pj_st_planned:'आगामी', pj_st_today:'आज हो रही है', pj_st_completed:'पूर्ण',
+      pj_st_extended:'विस्तारित', pj_st_cancelled:'रद्द',
+
+      don_title:"दान", don_sub:"नकद एवं वस्तु दान, 80G रसीदें और धन्यवाद प्रमाणपत्र", don_record:"दान दर्ज करें", don_edit:"दान संपादित करें", don_kpi_cash:"इस माह नकद", don_kpi_kind:"इस माह वस्तु दान", don_kpi_kind_meta:"प्राप्त अनुमानित मूल्य", don_kpi_donors:"पंजीकृत दानदाता", don_kpi_donors_meta:"व्यक्ति, कंपनी एवं ट्रस्ट", don_kpi_pledged:"वचनबद्ध", don_kpi_pledged_meta:"प्राप्ति शेष", don_register:"दान रजिस्टर", don_donor_registry:"दानदाता रजिस्टर", don_categories:"दान श्रेणियाँ", don_category:"श्रेणी", don_add_donor:"दानदाता जोड़ें", don_add_category:"श्रेणी जोड़ें", don_edit_category:"श्रेणी संपादित करें", don_edit_donor:"दानदाता संपादित करें", don_receipt_no:"रसीद क्रमांक", don_donor:"दानदाता", don_given:"दान", don_value:"मूल्य", don_donor_type:"प्रकार", don_lifetime:"कुल", don_received:"प्राप्त", don_pledged:"वचनबद्ध", don_receipt:"रसीद", don_certificate:"प्रमाणपत्र", don_est_value:"अनु. मूल्य", don_none:"कोई दान नहीं मिला।", don_no_donors:"कोई दानदाता नहीं।", don_records:"रिकॉर्ड", don_unused:"अभी उपयोग नहीं", don_kind:"वस्तु", don_cash:"नकद", don_select_donor:"दानदाता चुनें", don_no_pan:"PAN उपलब्ध नहीं", don_history:"दान इतिहास", don_contact_person:"संपर्क व्यक्ति", don_committee:"समिति / समाज", don_save_receipt:"सहेजें व रसीद जारी करें", don_saved:"दान दर्ज हुआ", don_updated:"दान अद्यतन हुआ", don_deleted:"दान हटाया गया", don_delete_title:"दान हटाएँ", don_delete_body:"इसका रिकॉर्ड हटाएँ", don_pick_donor:"कृपया दानदाता चुनें।", don_pick_category:"कृपया श्रेणी चुनें।", don_need_item:"दान की गई वस्तु बताएँ।", don_need_value:"अनुमानित मूल्य दर्ज करें।", don_need_amount:"दान राशि दर्ज करें।", don_donor_exists:"इस मोबाइल से दानदाता पहले से मौजूद है", don_edit_instead:"उस रिकॉर्ड को संपादित करें।", don_need_name:"पहला व अंतिम नाम आवश्यक है।", don_need_org:"संस्था का नाम आवश्यक है।", don_need_mobile:"मोबाइल 10 अंकों का हो।", don_bad_pan:"PAN प्रारूप गलत है (ABCDE1234F)।", don_donor_added:"दानदाता जोड़ा गया", don_donor_updated:"दानदाता अद्यतन", don_donor_deleted:"दानदाता हटाया गया", don_delete_donor:"दानदाता हटाएँ", don_delete_donor_body:"दानदाता हटाएँ", don_donor_in_use:"{n} दान इस दानदाता से जुड़े हैं - हटाया नहीं जा सकता।", don_need_cat_name:"श्रेणी नाम आवश्यक है।", don_cat_exists:"यह श्रेणी नाम पहले से है।", don_cat_added:"श्रेणी जोड़ी गई", don_cat_updated:"श्रेणी अद्यतन", don_cat_deleted:"श्रेणी हटाई गई", don_delete_category:"श्रेणी हटाएँ", don_delete_cat_body:"श्रेणी हटाएँ", don_cat_in_use:"{n} दान इस श्रेणी में हैं।", don_receipt_title:"आधिकारिक मंदिर रसीद (80G)", don_cert_title:"धन्यवाद प्रमाणपत्र", call:"कॉल", cmt_title:"समिति / समाज", cmt_my_title:"मेरी समितियाँ", cmt_all:"सभी समितियाँ", cmt_sub_admin:"Committees for the temple construction - leaders, members, meetings and attendance", cmt_sub_lead:"Open a committee assigned to you", cmt_add:"समिति जोड़ें", cmt_create:"समिति बनाएँ", cmt_edit:"समिति संपादित करें", cmt_delete:"समिति हटाएँ", cmt_kpi_total:"समितियाँ", cmt_kpi_total_meta:"Across the platform", cmt_kpi_members:"सदस्य", cmt_kpi_members_meta:"Registered across committees", cmt_kpi_meetings:"इस माह बैठकें", cmt_kpi_attendance:"औसत उपस्थिति", cmt_kpi_attendance_meta:"This month", cmt_none:"No committee assigned", cmt_none_admin:"Create your first committee.", cmt_none_lead:"No committee has been assigned to you yet.", cmt_open_ws:"समिति वर्कस्पेस खोलें", cmt_leader:"नेता", cmt_members:"सदस्य", cmt_attendance:"उपस्थिति", cmt_next:"अगली", cmt_no_meeting:"No meeting scheduled", cmt_expected:"अपेक्षित", cmt_seats:"स्थान", cmt_active_members:"सक्रिय", cmt_tab_overview:"सारांश", cmt_tab_members:"सदस्य", cmt_tab_meetings:"बैठकें", cmt_tab_calendar:"कैलेंडर", cmt_tab_whatsapp:"व्हाट्सएप", cmt_tab_settings:"सेटिंग्स", cmt_tab_activity:"गतिविधि", cmt_add_member:"सदस्य जोड़ें", cmt_edit_member:"सदस्य संपादित करें", cmt_schedule:"बैठक निर्धारित करें", cmt_edit_meeting:"Edit Meeting", cmt_meeting:"बैठक", cmt_meetings_word:"बैठकें", cmt_meetings_sub:"Schedule meetings and mark attendance", cmt_upcoming_meetings:"Upcoming Meetings", cmt_completed_meetings:"Completed Meetings", cmt_no_upcoming:"No upcoming meetings.", cmt_no_completed:"No completed meetings yet.", cmt_no_meetings:"No meetings assigned.", cmt_no_meetings2:"No meetings scheduled yet.", cmt_no_members:"No members yet.", cmt_no_activity:"No activity.", cmt_no_drafts:"No drafts yet.", cmt_joined:"जुड़े", cmt_also_in:"इनमें भी", cmt_deactivate:"निष्क्रिय करें", cmt_activate:"सक्रिय करें", cmt_present:"उपस्थित", cmt_absent:"अनुपस्थित", cmt_not_marked:"चिह्नित नहीं", cmt_invited:"आमंत्रित", cmt_scheduled:"निर्धारित", cmt_running:"चल रही", cmt_done:"पूर्ण", cmt_agenda:"कार्यसूची", cmt_attendance_list:"उपस्थिति सूची", cmt_attendance_history:"उपस्थिति इतिहास", cmt_all_present:"सभी उपस्थित", cmt_all_absent:"सभी अनुपस्थित", cmt_complete:"बैठक पूर्ण करें", cmt_complete_note:"Once completed, attendance becomes read-only.", cmt_meeting_done:"Meeting completed.", cmt_locked:"This meeting is completed. Attendance is read-only.", cmt_locked_short:"Locked", cmt_calendar:"बैठक कैलेंडर", cmt_settings:"समिति सेटिंग्स", cmt_settings_admin:"Full settings including leader assignment", cmt_settings_lead:"Leaders can edit committee details. Leader assignment is admin-only.", cmt_activity_log:"गतिविधि लॉग", cmt_whatsapp:"व्हाट्सएप संचार", cmt_whatsapp_sub:"Group, broadcast and reusable draft messages", cmt_group:"व्हाट्सएप ग्रुप", cmt_group_name:"Group Name", cmt_group_link:"Group Invite Link", cmt_broadcast:"ब्रॉडकास्ट", cmt_broadcast_name:"Broadcast Name", cmt_broadcast_link:"Broadcast Link", cmt_open_group:"Open Group", cmt_open_broadcast:"Open Broadcast", cmt_drafts:"संदेश ड्राफ्ट", cmt_new_draft:"नया ड्राफ्ट", cmt_edit_draft:"Edit Draft", cmt_delete_draft:"Delete Draft", cmt_draft_deleted:"Draft deleted.", cmt_updated:"Updated", cmt_copy:"कॉपी", cmt_send:"भेजें", cmt_copied:"Copied.", cmt_copied_paste:"Message copied - paste it in WhatsApp.", cmt_sent:"Message sent", cmt_no_link:"No link saved yet.", cmt_name:"समिति नाम", cmt_samaj:"समाज", cmt_expected_size:"अपेक्षित आकार", cmt_colour:"रंग", cmt_purpose:"उद्देश्य", cmt_select_leader:"Select leader", cmt_access_denied:"Access denied.", cmt_admin_only:"Only an administrator can do this.", cmt_leader_access:"Committee Leader access. You can only open:", cmt_need_name:"Name is required.", cmt_need_leader:"Assign a leader.", cmt_need_purpose:"Purpose is required.", cmt_delete_body:"This deletes the committee, its members, meetings and attendance.", cmt_created:"Committee created", cmt_deleted:"deleted", cmt_updated_by:"Committee updated by", cmt_already_member:"is already on this committee.", cmt_existing_devotee:"Existing devotee", cmt_will_link:"will be linked, not duplicated.", cmt_need_member_name:"First and last name are required.", cmt_need_mobile:"Mobile must be 10 digits.", cmt_added_word:"added", cmt_removed:"removed", cmt_deactivate_body:"They stop appearing in new meetings but history is kept.", cmt_remove_member:"Remove Member", cmt_remove_body:"Removes the committee assignment and its attendance rows. The devotee record is kept.", cmt_no_active_members:"No active members yet.", cmt_need_meeting_title:"Meeting title is required.", cmt_need_datetime:"Date and time are required.", cmt_end_after_start:"End time must be after start time.", cmt_pick_members:"Invite at least one member.", cmt_meeting_updated:"Meeting updated.", cmt_meeting_scheduled:"Meeting scheduled", cmt_delete_meeting:"Delete Meeting", cmt_meeting_deleted:"Meeting deleted.", cmt_need_draft:"Title and message are required.", cmt_no_meeting_row:"No meetings.", ev_title:"मंदिर कार्यक्रम", ev_sub:"उत्सव, महोत्सव और सेवा कार्यक्रम", ev_add:"कार्यक्रम जोड़ें", ev_edit:"कार्यक्रम संपादित करें", ev_delete:"Delete Event", ev_deleted:"Event deleted.", ev_created:"Event created", ev_updated:"Event updated", ev_kpi_total:"कुल कार्यक्रम", ev_kpi_total_meta:"On the calendar", ev_kpi_upcoming:"आगामी", ev_kpi_upcoming_meta:"Still to come", ev_kpi_footfall:"अनुमानित उपस्थिति", ev_kpi_types:"कार्यक्रम प्रकार", ev_kpi_types_meta:"Master list", ev_open_ws:"कार्यक्रम खोलें", ev_type_catalog:"कार्यक्रम प्रकार सूची", ev_type:"प्रकार", ev_add_type:"Add Event Type", ev_edit_type:"Edit Event Type", ev_delete_type:"Delete Event Type", ev_type_exists:"That type already exists.", ev_type_in_use:"event(s) use this type.", ev_type_deleted:"Type deleted.", ev_records:"event(s)", ev_unused:"Not used yet", ev_days:"दिन", ev_day:"day", ev_incharge:"प्रभारी", ev_footfall:"उपस्थिति", ev_budget:"बजट", ev_estimate:"Estimate", ev_schedule:"समय-सारणी", ev_manage_days:"Manage Days", ev_notice:"सूचना / निमंत्रण", ev_no_date:"No date", ev_tab_overview:"सारांश", ev_tab_schedule:"समय-सारणी", ev_tab_settings:"सेटिंग्स", ev_tab_activity:"गतिविधि", ev_st_planning:"नियोजन", ev_st_confirmed:"पुष्ट", ev_st_ongoing:"चालू", ev_st_completed:"पूर्ण", ev_st_cancelled:"रद्द", ev_select_type:"Select type", ev_select_incharge:"Select in-charge", ev_need_name:"Event name is required.", ev_need_type:"Select an event type.", ev_need_day:"Add at least one day.", ev_end_after:"End time must be after start time.", ev_invite_line:"You are cordially invited to", vis_title:"बाप्पा / भुवाजी पधरामणी", vis_sub:"घर, दुकान और पारिवारिक समारोहों में पधरामणी — एस्कॉर्ट टीम के साथ", vis_add:"पधरामणी जोड़ें", vis_edit:"पधरामणी संपादित करें", vis_delete:"Delete Visit", vis_deleted:"Visit deleted.", vis_added:"Visit added.", vis_kpi_total:"कुल पधरामणी", vis_kpi_upcoming:"आगामी", vis_kpi_upcoming_meta:"Scheduled / confirmed", vis_kpi_pending:"स्वीकृति प्रतीक्षित", vis_kpi_pending_meta:"New requests", vis_kpi_teams:"एस्कॉर्ट टीमें", vis_kpi_teams_meta:"On the roster", vis_register:"पधरामणी रजिस्टर", vis_devotee:"श्रद्धालु", vis_purpose:"उद्देश्य", vis_address:"पता", vis_datetime:"तिथि व समय", vis_escort:"एस्कॉर्ट टीम", vis_none:"No visits match.", vis_escort_ph:"Team that carries the palki & manages the visit", vis_need_name:"Devotee name is required.", vis_need_date:"Date is required.", vis_explain:"पधरामणी वह है जब माताजी की मूर्ति या भुवाजी (मंदिर के माध्यम) को श्रद्धालु के घर, दुकान या पारिवारिक समारोह में आशीर्वाद हेतु ले जाया जाता है। एस्कॉर्ट टीम वह स्वयंसेवक समूह है जो पालकी उठाता है, आरती थाली व भीड़ संभालता है, मूर्ति की सुरक्षा और वापसी यात्रा का प्रबंध करता है।", vis_p_home_inauguration:"नया घर / वास्तु", vis_p_shop_opening:"दुकान उद्घाटन", vis_p_wedding_blessing:"विवाह आशीर्वाद", vis_p_health_blessing:"स्वास्थ्य / आरोग्य", vis_p_business_puja:"व्यवसाय / फैक्ट्री पूजा", vis_p_festival_padhramani:"उत्सव पधरामणी", vis_p_other:"अन्य", vis_s_requested:"अनुरोधित", vis_s_scheduled:"निर्धारित", vis_s_confirmed:"पुष्ट", vis_s_completed:"पूर्ण", vis_s_cancelled:"रद्द", cal_title:"एकीकृत मंदिर कैलेंडर", cal_sub:"पूजा, समिति बैठकें, कार्यक्रम, वचनबद्ध दान और पधरामणी — एक ही स्थान पर", cal_next:"अगला", cal_up_next:"आगे", cal_item:"मद", cal_type:"प्रकार", cal_nothing:"इस माह कुछ भी निर्धारित नहीं।", cal_poojas:"पूजा", cal_meetings:"बैठकें", cal_events:"कार्यक्रम", cal_donations:"वचन", cal_visits:"पधरामणी", cal_pledge:"वचनबद्ध दान", cal_mon:"सोम", cal_tue:"मंगल", cal_wed:"बुध", cal_thu:"गुरु", cal_fri:"शुक्र", cal_sat:"शनि", cal_sun:"रवि", mg_lead:"प्रबंधन नेता", mg_volunteer:"स्वयंसेवक", mg_id:"आईडी", pj_inv_royal:"रॉयल (औपचारिक)", pj_inv_cream:"क्रीम (सादा)", pj_inv_festival:"उत्सव", pj_inv_lang_app:"ऐप जैसी", pj_inv_template:"टेम्पलेट", pj_inv_language:"कार्ड भाषा", pj_inv_accent:"एक्सेंट रंग", pj_inv_headline:"शीर्षक", pj_inv_line:"आमंत्रण पंक्ति", pj_inv_blessing:"समापन आशीर्वाद", pj_inv_show_schedule:"पूरा सत्र कार्यक्रम दिखाएँ", pj_inv_show_sevarthi:"सेवार्थी नाम दिखाएँ", pj_inv_show_guests:"अतिथि / पंडित दिखाएँ", pj_inv_save:"कार्ड सहेजें", pj_inv_print:"प्रिंट / PDF", pj_inv_sub2:"पूजा से स्वतः भरा हुआ। पाठ, रंग और भाषा बदलें, फिर प्रिंट करें या PDF (A5) सहेजें।", pj_edit_pooja:'पूजा संपादित करें', pj_all_poojas:'सभी पूजाएँ', pj_sessions_word:'सत्र', dash_kpi_pooja:'आज की पूजाएँ', dash_kpi_don:'इस माह दान', dash_kpi_accounts:'अधिकृत खाते', dash_kpi_accounts_meta:'प्लेटफ़ॉर्म पहुँच सहित', dash_kpi_month:'इस माह', dash_glance:'आपके मंदिर की एक झलक', dash_attention:'ध्यान देने योग्य', dash_today_temple:'आज पूरे मंदिर में', dash_today_area:'आज आपके क्षेत्र में', dash_today:'आज', dash_quiet:'शांत दिन — कुछ भी निर्धारित नहीं।', dash_your_area:'आपका क्षेत्र', dash_no_assign:'आपको अभी कुछ सौंपा नहीं गया।', dash_on_file:'रिकॉर्ड में', dash_items:'वस्तुएँ', dash_vouchers:'वाउचर', dash_a_pledged:'दान वचन वसूली की प्रतीक्षा में', dash_a_visits:'भुवाजी भेंट अनुरोध स्वीकृति हेतु', dash_a_sevarthi:'बिना सेवार्थी वाली पूजाएँ', dash_a_stock:'कम या समाप्त स्टॉक वस्तुएँ', dash_a_attend:'कम बैठक उपस्थिति वाली समितियाँ', nav_puja_s:'पूजा एवं सेवा', nav_management_s:'प्रबंधन ऐप्स', nav_devotees_s:'भक्त', nav_inventory_s:'भंडार', nav_expenses_s:'व्यय', role_superadmin:'सुपर एडमिन', role_management_lead:'प्रबंधन प्रमुख', role_pooja_coordinator:'पूजा समन्वयक', role_committee_leader:'समिति नेता', role_event_incharge:'कार्यक्रम प्रभारी', role_accountant:'लेखाकार', acc_title:'खाते एवं पहुँच', acc_sub:'हर अधिकृत खाता, वह क्या खोल सकता है, और एक सजीव ऑडिट ट्रेल', acc_kpi_total:'अधिकृत खाते', acc_kpi_total_meta:'सभी भूमिकाओं में', acc_kpi_admin:'सुपर एडमिन', acc_kpi_admin_meta:'पूर्ण प्लेटफ़ॉर्म पहुँच', acc_kpi_leaders:'नेता एवं समन्वयक', acc_kpi_leaders_meta:'अपने क्षेत्र तक सीमित', acc_kpi_roles:'पहुँच भूमिकाएँ', acc_kpi_roles_meta:'परिभाषित भूमिका प्रकार', acc_by_role:'भूमिका अनुसार पहुँच', acc_can_open:'खोल सकते हैं', acc_everything:'सब कुछ', acc_accounts:'खाते', acc_account_ct:'खाता', acc_roles:'भूमिकाएँ', acc_signin:'इस रूप में साइन इन करें', acc_audit:'ऑडिट ट्रेल', acc_audit_meta:'सजीव, हर मॉड्यूल से संकलित', acc_module:'मॉड्यूल', acc_action:'क्रिया', acc_when:'कब', rep_title:'रिपोर्ट एवं विश्लेषण', rep_sub:'चालू माह हेतु हर मॉड्यूल से सजीव आँकड़े', rep_export_all:'गतिविधि लॉग निर्यात', rep_don:'दान (नकद, माह)', rep_donkind:'वस्तु मूल्य (माह)', rep_exp:'व्यय (कुल)', rep_dev:'पंजीकृत भक्त', rep_pooja:'पूजाएँ', rep_cmt:'समिति उपस्थिति', rep_ev:'कार्यक्रम', rep_vis:'भुवाजी भेंट', set_title:'प्लेटफ़ॉर्म सेटिंग्स', set_sub:'मंदिर पहचान, भाषा और डेमो डेटा', set_identity:'मंदिर पहचान', set_name:'मंदिर का नाम', set_loc:'स्थान', set_email:'संपर्क ईमेल', set_phone:'संपर्क फ़ोन', set_platform:'प्लेटफ़ॉर्म', set_lang:'डिफ़ॉल्ट भाषा', set_clock:'डेमो घड़ी', set_accounts_hint:'प्लेटफ़ॉर्म पहुँच प्रबंधित करें', set_page:'पृष्ठ पर', set_reset:'नया लोड — सभी डेमो डेटा रीसेट करें', set_clock_title:'कार्य तिथि एवं डेटा', set_clock_sub:'हर डैशबोर्ड, कैलेंडर, पूजा/कार्यक्रम स्थिति और मासिक रिपोर्ट इसी तिथि के अनुसार गणना होती है। रिकॉर्ड को समय के साथ देखने हेतु इसे बदलें।', set_clock_apply:'कार्य तिथि लागू करें', set_clock_reset:'मूल तिथि पर रीसेट करें', set_clock_note:'एक कस्टम कार्य तिथि सक्रिय है और रीलोड पर याद रहती है।', set_clock_bad:'मान्य तिथि चुनें।', set_clock_done:'कार्य तिथि सेट की गई', set_reset_confirm:'पुनः लोड कर सभी डेमो डेटा रीसेट करें?', set_saved:'मंदिर जानकारी सहेजी गई।', teams_moved:'स्टाफ़ एवं स्वयंसेवक टीमें अब प्रबंधन मॉड्यूल में हैं', teams_moved_sub:'स्वयंसेवक टीमें, प्रमुख नियुक्ति, सेवा कार्यक्रम, उपस्थिति और बैज सभी प्रबंधन ऐप्स में हैं।', teams_open:'प्रबंधन ऐप्स खोलें', lang_switched:'भाषा बदली गई'
+    },
+
+    gu: {
+      add:'ઉમેરો', edit:'સંપાદિત કરો', delete:'કાઢી નાખો', save:'સાચવો', cancel:'રદ કરો', close:'બંધ કરો',
+      open:'ખોલો', view:'જુઓ', back:'પાછળ', remove:'દૂર કરો', confirm:'પુષ્ટિ કરો', search:'શોધો',
+      export:'નિકાસ', print:'પ્રિન્ટ', preview:'પૂર્વાવલોકન', reopen:'ફરી ખોલો', yes:'હા', no:'ના',
+      active:'સક્રિય', inactive:'નિષ્ક્રિય', status:'સ્થિતિ', name:'નામ', mobile:'મોબાઇલ',
+      city:'શહેર', state:'રાજ્ય', role:'ભૂમિકા', notes:'નોંધ', date:'તારીખ', time:'સમય',
+      venue:'સ્થળ', actions:'ક્રિયાઓ', all:'બધા', none:'કંઈ નહીં', today:'આજે', upcoming:'આગામી',
+      completed:'પૂર્ણ', pending:'બાકી',
+
+      temple_name:'શ્રી વિહત મેલડી માતા મંદિર',
+      temple_loc:'સાણંદ, ગુજરાત',
+      sub_tagline:'સાણંદ, ગુજરાત — સેન્ટ્રલ મેનેજમેન્ટ પ્લેટફોર્મ',
+      sign_in:'🔐 સાઇન ઇન કરો', sign_out:'સાઇન આઉટ', administrator:'એડમિનિસ્ટ્રેટર',
+      search_placeholder:'શ્રદ્ધાળુ, પહોંચ, પૂજા શોધો...',
+
+      nav_main:'મુખ્ય નેવિગેશન', nav_ops:'પ્લેટફોર્મ અને કામગીરી', nav_grp_overview:'ઝલક', nav_grp_seva:'સેવા અને કાર્યક્રમો', nav_grp_people:'લોકો અને વહીવટ', nav_grp_resources:'દાન અને સંસાધનો', nav_grp_admin:'વહીવટ', rep_downloads:'ડાઉનલોડ કરી શકાય તેવા રજિસ્ટર', set_founder:'મંદિર સ્થાપક', set_head:'મંદિર પ્રમુખ', exp_word:'નિકાસ',
+      nav_dashboard:'🏠 ડેશબોર્ડ', nav_puja:'🪔 પૂજા અને સેવા', nav_donations:'💰 દાન મંડળ',
+      nav_devotees:'👥 શ્રદ્ધાળુ રજીસ્ટર', nav_management:'🗂️ મેનેજમેન્ટ એપ્સ',
+      nav_committees:'🏛️ સમિતિ / સમાજ', nav_teams:'👷 ટીમ અને સ્વયંસેવકો', nav_events:'📅 ધાર્મિક ઉત્સવો',
+      nav_inventory:'📦 ઈન્વેન્ટરી સ્ટોક', nav_expenses:'💸 ખર્ચ હિસાબ', nav_visits:'🙏 બાપ્પા / ભુવાજી પધરામણી',
+      nav_calendar:'🗓️ સંકલિત કેલેન્ડર', nav_reports:'📊 રિપોર્ટ્સ', nav_settings:'⚙️ સેટિંગ્સ',
+      nav_admin:'🛡️ ખાતાં અને ઍક્સેસ',
+
+      banner_invoke:'ૐ નમઃ શિવાય',
+      banner_headline:'જય શ્રી વિહત મેલડી માતાજી',
+      banner_tagline:'માતાજીની કૃપા, ભક્તોની શ્રદ્ધા',
+      banner_khamma:'ખમ્મા માડી, ખમ્મા 🙏',
+      welcome_back:'પુનઃ સ્વાગત છે',
+      kpi_seva:'આજની સેવા બુકિંગ', kpi_donations:'આજનું કુલ દાન',
+      kpi_devotees:'નોંધાયેલ શ્રદ્ધાળુઓ', kpi_visits:'આજના મંદિર દર્શન',
+      quick_actions:'ઝડપી કાર્યો', modules_launcher:'મેનેજમેન્ટ મોડ્યુલ્સ લૉન્ચર',
+      todays_overview:'આજની ઝલક', recent_activity:'તાજેતરની પ્રવૃત્તિ',
+
+      action_book_seva:'સેવા બુક કરો', action_record_donation:'દાન પહોંચ નોંધો',
+      action_add_devotee:'શ્રદ્ધાળુ ઉમેરો', action_add_expense:'ખર્ચ નોંધો',
+      action_qr_badge:'QR બેજ', action_events:'ઉત્સવો', action_inventory:'સ્ટોક યાદી',
+      action_reports:'રિપોર્ટ્સ',
+
+      mob_home:'હોમ', mob_seva:'સેવા', mob_donations:'દાન', mob_devotees:'શ્રદ્ધાળુઓ',
+      mob_management:'ટીમ', mob_more:'વધુ',
+
+      pj_title:'પૂજા અને સેવા', pj_my_title:'મારી પૂજાઓ',
+      pj_sub_admin:'પૂજા કાર્યક્રમ બનાવો, સેવાર્થી નોંધો, સંયોજક સોંપો અને આમંત્રણ છાપો',
+      pj_sub_coord:'તમને સોંપેલી પૂજા ખોલો',
+      pj_add:'પૂજા ઉમેરો', pj_export:'CSV નિકાસ',
+      pj_kpi_total:'કુલ પૂજાઓ', pj_kpi_upcoming:'આગામી', pj_kpi_sevarthis:'સેવાર્થીઓ',
+      pj_kpi_types:'પૂજા પ્રકાર',
+      pj_open_ws:'પૂજા વર્કસ્પેસ ખોલો', pj_directory:'પૂજા ડિરેક્ટરી',
+      pj_people_registry:'મહેમાનો અને પંડિતો', pj_type_catalog:'પૂજા પ્રકાર માસ્ટર યાદી',
+      pj_tab_overview:'ઝલક', pj_tab_sevarthi:'સેવાર્થી', pj_tab_invitation:'આમંત્રણ',
+      pj_tab_calendar:'કેલેન્ડર', pj_tab_settings:'સેટિંગ્સ', pj_tab_activity:'પ્રવૃત્તિ',
+      pj_sevarthi_records:'સેવાર્થી રેકોર્ડ',
+      pj_sevarthi_sub:'આ પૂજાની સેવા લેનાર શ્રદ્ધાળુઓ',
+      pj_add_sevarthi:'સેવાર્થી ઉમેરો', pj_add_guest:'મહેમાન / પંડિત ઉમેરો',
+      pj_new_guest:'+ નવો મહેમાન / પંડિત ઉમેરો',
+      pj_session_schedule:'સત્ર સમયપત્રક', pj_manage_sessions:'સત્રો સંચાલિત કરો',
+      pj_pooja_details:'પૂજા વિગતો', pj_guests_pandits:'મહેમાનો અને પંડિતો',
+      pj_invitation_card:'આમંત્રણ કાર્ડ',
+      pj_invitation_sub:'પૂજામાંથી આપોઆપ ભરાયેલું. લખાણ અને શૈલી બદલો, પછી પ્રિન્ટ કરો અથવા PDF (A5) સાચવો.',
+      pj_calendar:'પૂજા કેલેન્ડર', pj_settings:'પૂજા સેટિંગ્સ', pj_activity:'પ્રવૃત્તિ લોગ',
+      pj_mark_completed:'✓ પૂર્ણ તરીકે ચિહ્નિત કરો', pj_mark_extended:'વિસ્તૃત તરીકે ચિહ્નિત કરો',
+      pj_cancel_pooja:'પૂજા રદ કરો', pj_reopen_pooja:'પૂજા ફરી ખોલો',
+      pj_schedule:'સમયપત્રક', pj_next_session:'આગામી સત્ર', pj_days_to_go:'બાકી દિવસ',
+      pj_people:'લોકો', pj_coordinator:'સંયોજક', pj_sevarthi:'સેવાર્થી',
+      pj_type:'પ્રકાર', pj_single_event:'એકલ કાર્યક્રમ', pj_multi_session:'બહુ-સત્ર',
+      pj_no_sevarthi:'હજી કોઈ સેવાર્થી નથી', pj_no_guests:'કોઈ મહેમાન કે પંડિત ઉમેર્યા નથી.',
+      pj_today_is:'આજે છે',
+      pj_status_auto_note:'જ્યાં સુધી તમે અહીં સેટ ન કરો ત્યાં સુધી સ્થિતિ સત્ર તારીખો પરથી આપોઆપ અપડેટ થાય છે.',
+
+      pj_st_planned:'આગામી', pj_st_today:'આજે થઈ રહી છે', pj_st_completed:'પૂર્ણ',
+      pj_st_extended:'વિસ્તૃત', pj_st_cancelled:'રદ',
+
+      don_title:"દાન", don_sub:"રોકડ અને વસ્તુ દાન, 80G પહોંચ અને ધન્યવાદ પ્રમાણપત્ર", don_record:"દાન નોંધો", don_edit:"દાન સંપાદિત કરો", don_kpi_cash:"આ મહિને રોકડ", don_kpi_kind:"આ મહિને વસ્તુ દાન", don_kpi_kind_meta:"મળેલ અંદાજિત મૂલ્ય", don_kpi_donors:"નોંધાયેલ દાતાઓ", don_kpi_donors_meta:"વ્યક્તિ, કંપની અને ટ્રસ્ટ", don_kpi_pledged:"વચનબદ્ધ", don_kpi_pledged_meta:"મળવાનું બાકી", don_register:"દાન રજિસ્ટર", don_donor_registry:"દાતા રજિસ્ટર", don_categories:"દાન શ્રેણીઓ", don_category:"શ્રેણી", don_add_donor:"દાતા ઉમેરો", don_add_category:"શ્રેણી ઉમેરો", don_edit_category:"શ્રેણી સંપાદિત કરો", don_edit_donor:"દાતા સંપાદિત કરો", don_receipt_no:"પહોંચ નં", don_donor:"દાતા", don_given:"દાન", don_value:"મૂલ્ય", don_donor_type:"પ્રકાર", don_lifetime:"કુલ", don_received:"મળ્યું", don_pledged:"વચનબદ્ધ", don_receipt:"પહોંચ", don_certificate:"પ્રમાણપત્ર", don_est_value:"અંદાજિત મૂલ્ય", don_none:"કોઈ દાન મળ્યું નથી.", don_no_donors:"કોઈ દાતા નથી.", don_records:"રેકોર્ડ", don_unused:"હજી વપરાયું નથી", don_kind:"વસ્તુ", don_cash:"રોકડ", don_select_donor:"દાતા પસંદ કરો", don_no_pan:"PAN ઉપલબ્ધ નથી", don_history:"દાન ઇતિહાસ", don_contact_person:"સંપર્ક વ્યક્તિ", don_committee:"સમિતિ / સમાજ", don_save_receipt:"સાચવો અને પહોંચ આપો", don_saved:"દાન નોંધાયું", don_updated:"દાન અપડેટ થયું", don_deleted:"દાન કાઢી નાખ્યું", don_delete_title:"દાન કાઢી નાખો", don_delete_body:"આનો રેકોર્ડ કાઢી નાખો", don_pick_donor:"કૃપા કરી દાતા પસંદ કરો.", don_pick_category:"કૃપા કરી શ્રેણી પસંદ કરો.", don_need_item:"દાનમાં આપેલી વસ્તુ જણાવો.", don_need_value:"અંદાજિત મૂલ્ય દાખલ કરો.", don_need_amount:"દાનની રકમ દાખલ કરો.", don_donor_exists:"આ મોબાઇલ સાથે દાતા પહેલેથી છે", don_edit_instead:"એ રેકોર્ડ સંપાદિત કરો.", don_need_name:"પ્રથમ અને છેલ્લું નામ જરૂરી છે.", don_need_org:"સંસ્થાનું નામ જરૂરી છે.", don_need_mobile:"મોબાઇલ 10 અંકનો હોવો જોઈએ.", don_bad_pan:"PAN ફોર્મેટ ખોટું છે (ABCDE1234F).", don_donor_added:"દાતા ઉમેરાયો", don_donor_updated:"દાતા અપડેટ થયો", don_donor_deleted:"દાતા કાઢી નાખ્યો", don_delete_donor:"દાતા કાઢી નાખો", don_delete_donor_body:"દાતા કાઢી નાખો", don_donor_in_use:"{n} દાન આ દાતા સાથે જોડાયેલા છે - કાઢી શકાતું નથી.", don_need_cat_name:"શ્રેણી નામ જરૂરી છે.", don_cat_exists:"આ શ્રેણી નામ પહેલેથી છે.", don_cat_added:"શ્રેણી ઉમેરાઈ", don_cat_updated:"શ્રેણી અપડેટ થઈ", don_cat_deleted:"શ્રેણી કાઢી નાખી", don_delete_category:"શ્રેણી કાઢી નાખો", don_delete_cat_body:"શ્રેણી કાઢી નાખો", don_cat_in_use:"{n} દાન આ શ્રેણીમાં છે.", don_receipt_title:"સત્તાવાર મંદિર પહોંચ (80G)", don_cert_title:"ધન્યવાદ પ્રમાણપત્ર", call:"કૉલ", cmt_title:"સમિતિ / સમાજ", cmt_my_title:"મારી સમિતિઓ", cmt_all:"બધી સમિતિઓ", cmt_sub_admin:"Committees for the temple construction - leaders, members, meetings and attendance", cmt_sub_lead:"Open a committee assigned to you", cmt_add:"સમિતિ ઉમેરો", cmt_create:"સમિતિ બનાવો", cmt_edit:"સમિતિ સંપાદિત કરો", cmt_delete:"સમિતિ કાઢી નાખો", cmt_kpi_total:"સમિતિઓ", cmt_kpi_total_meta:"Across the platform", cmt_kpi_members:"સભ્યો", cmt_kpi_members_meta:"Registered across committees", cmt_kpi_meetings:"આ મહિને બેઠકો", cmt_kpi_attendance:"સરેરાશ હાજરી", cmt_kpi_attendance_meta:"This month", cmt_none:"No committee assigned", cmt_none_admin:"Create your first committee.", cmt_none_lead:"No committee has been assigned to you yet.", cmt_open_ws:"સમિતિ વર્કસ્પેસ ખોલો", cmt_leader:"આગેવાન", cmt_members:"સભ્યો", cmt_attendance:"હાજરી", cmt_next:"આગામી", cmt_no_meeting:"No meeting scheduled", cmt_expected:"અપેક્ષિત", cmt_seats:"બેઠકો", cmt_active_members:"સક્રિય", cmt_tab_overview:"ઝલક", cmt_tab_members:"સભ્યો", cmt_tab_meetings:"બેઠકો", cmt_tab_calendar:"કેલેન્ડર", cmt_tab_whatsapp:"વોટ્સએપ", cmt_tab_settings:"સેટિંગ્સ", cmt_tab_activity:"પ્રવૃત્તિ", cmt_add_member:"સભ્ય ઉમેરો", cmt_edit_member:"સભ્ય સંપાદિત કરો", cmt_schedule:"બેઠક ગોઠવો", cmt_edit_meeting:"Edit Meeting", cmt_meeting:"બેઠક", cmt_meetings_word:"બેઠકો", cmt_meetings_sub:"Schedule meetings and mark attendance", cmt_upcoming_meetings:"Upcoming Meetings", cmt_completed_meetings:"Completed Meetings", cmt_no_upcoming:"No upcoming meetings.", cmt_no_completed:"No completed meetings yet.", cmt_no_meetings:"No meetings assigned.", cmt_no_meetings2:"No meetings scheduled yet.", cmt_no_members:"No members yet.", cmt_no_activity:"No activity.", cmt_no_drafts:"No drafts yet.", cmt_joined:"જોડાયા", cmt_also_in:"આમાં પણ", cmt_deactivate:"નિષ્ક્રિય કરો", cmt_activate:"સક્રિય કરો", cmt_present:"હાજર", cmt_absent:"ગેરહાજર", cmt_not_marked:"ચિહ્નિત નથી", cmt_invited:"આમંત્રિત", cmt_scheduled:"નિર્ધારિત", cmt_running:"ચાલુ", cmt_done:"પૂર્ણ", cmt_agenda:"કાર્યસૂચિ", cmt_attendance_list:"હાજરી યાદી", cmt_attendance_history:"હાજરી ઇતિહાસ", cmt_all_present:"બધા હાજર", cmt_all_absent:"બધા ગેરહાજર", cmt_complete:"બેઠક પૂર્ણ કરો", cmt_complete_note:"Once completed, attendance becomes read-only.", cmt_meeting_done:"Meeting completed.", cmt_locked:"This meeting is completed. Attendance is read-only.", cmt_locked_short:"Locked", cmt_calendar:"બેઠક કેલેન્ડર", cmt_settings:"સમિતિ સેટિંગ્સ", cmt_settings_admin:"Full settings including leader assignment", cmt_settings_lead:"Leaders can edit committee details. Leader assignment is admin-only.", cmt_activity_log:"પ્રવૃત્તિ લોગ", cmt_whatsapp:"વોટ્સએપ સંચાર", cmt_whatsapp_sub:"Group, broadcast and reusable draft messages", cmt_group:"વોટ્સએપ ગ્રુપ", cmt_group_name:"Group Name", cmt_group_link:"Group Invite Link", cmt_broadcast:"બ્રોડકાસ્ટ", cmt_broadcast_name:"Broadcast Name", cmt_broadcast_link:"Broadcast Link", cmt_open_group:"Open Group", cmt_open_broadcast:"Open Broadcast", cmt_drafts:"સંદેશ ડ્રાફ્ટ", cmt_new_draft:"નવો ડ્રાફ્ટ", cmt_edit_draft:"Edit Draft", cmt_delete_draft:"Delete Draft", cmt_draft_deleted:"Draft deleted.", cmt_updated:"Updated", cmt_copy:"કૉપિ", cmt_send:"મોકલો", cmt_copied:"Copied.", cmt_copied_paste:"Message copied - paste it in WhatsApp.", cmt_sent:"Message sent", cmt_no_link:"No link saved yet.", cmt_name:"સમિતિ નામ", cmt_samaj:"સમાજ", cmt_expected_size:"અપેક્ષિત કદ", cmt_colour:"રંગ", cmt_purpose:"હેતુ", cmt_select_leader:"Select leader", cmt_access_denied:"Access denied.", cmt_admin_only:"Only an administrator can do this.", cmt_leader_access:"Committee Leader access. You can only open:", cmt_need_name:"Name is required.", cmt_need_leader:"Assign a leader.", cmt_need_purpose:"Purpose is required.", cmt_delete_body:"This deletes the committee, its members, meetings and attendance.", cmt_created:"Committee created", cmt_deleted:"deleted", cmt_updated_by:"Committee updated by", cmt_already_member:"is already on this committee.", cmt_existing_devotee:"Existing devotee", cmt_will_link:"will be linked, not duplicated.", cmt_need_member_name:"First and last name are required.", cmt_need_mobile:"Mobile must be 10 digits.", cmt_added_word:"added", cmt_removed:"removed", cmt_deactivate_body:"They stop appearing in new meetings but history is kept.", cmt_remove_member:"Remove Member", cmt_remove_body:"Removes the committee assignment and its attendance rows. The devotee record is kept.", cmt_no_active_members:"No active members yet.", cmt_need_meeting_title:"Meeting title is required.", cmt_need_datetime:"Date and time are required.", cmt_end_after_start:"End time must be after start time.", cmt_pick_members:"Invite at least one member.", cmt_meeting_updated:"Meeting updated.", cmt_meeting_scheduled:"Meeting scheduled", cmt_delete_meeting:"Delete Meeting", cmt_meeting_deleted:"Meeting deleted.", cmt_need_draft:"Title and message are required.", cmt_no_meeting_row:"No meetings.", ev_title:"મંદિર કાર્યક્રમો", ev_sub:"ઉત્સવો, મહોત્સવો અને સેવા કાર્યક્રમો", ev_add:"કાર્યક્રમ ઉમેરો", ev_edit:"કાર્યક્રમ સંપાદિત કરો", ev_delete:"Delete Event", ev_deleted:"Event deleted.", ev_created:"Event created", ev_updated:"Event updated", ev_kpi_total:"કુલ કાર્યક્રમો", ev_kpi_total_meta:"On the calendar", ev_kpi_upcoming:"આગામી", ev_kpi_upcoming_meta:"Still to come", ev_kpi_footfall:"અંદાજિત હાજરી", ev_kpi_types:"કાર્યક્રમ પ્રકાર", ev_kpi_types_meta:"Master list", ev_open_ws:"કાર્યક્રમ ખોલો", ev_type_catalog:"કાર્યક્રમ પ્રકાર યાદી", ev_type:"પ્રકાર", ev_add_type:"Add Event Type", ev_edit_type:"Edit Event Type", ev_delete_type:"Delete Event Type", ev_type_exists:"That type already exists.", ev_type_in_use:"event(s) use this type.", ev_type_deleted:"Type deleted.", ev_records:"event(s)", ev_unused:"Not used yet", ev_days:"દિવસો", ev_day:"day", ev_incharge:"પ્રભારી", ev_footfall:"હાજરી", ev_budget:"બજેટ", ev_estimate:"Estimate", ev_schedule:"સમયપત્રક", ev_manage_days:"Manage Days", ev_notice:"સૂચના / આમંત્રણ", ev_no_date:"No date", ev_tab_overview:"ઝલક", ev_tab_schedule:"સમયપત્રક", ev_tab_settings:"સેટિંગ્સ", ev_tab_activity:"પ્રવૃત્તિ", ev_st_planning:"આયોજન", ev_st_confirmed:"પુષ્ટ", ev_st_ongoing:"ચાલુ", ev_st_completed:"પૂર્ણ", ev_st_cancelled:"રદ", ev_select_type:"Select type", ev_select_incharge:"Select in-charge", ev_need_name:"Event name is required.", ev_need_type:"Select an event type.", ev_need_day:"Add at least one day.", ev_end_after:"End time must be after start time.", ev_invite_line:"You are cordially invited to", vis_title:"બાપ્પા / ભુવાજી પધરામણી", vis_sub:"ઘર, દુકાન અને પારિવારિક પ્રસંગોમાં પધરામણી — એસ્કોર્ટ ટીમ સાથે", vis_add:"પધરામણી ઉમેરો", vis_edit:"પધરામણી સંપાદિત કરો", vis_delete:"Delete Visit", vis_deleted:"Visit deleted.", vis_added:"Visit added.", vis_kpi_total:"કુલ પધરામણી", vis_kpi_upcoming:"આગામી", vis_kpi_upcoming_meta:"Scheduled / confirmed", vis_kpi_pending:"મંજૂરી બાકી", vis_kpi_pending_meta:"New requests", vis_kpi_teams:"એસ્કોર્ટ ટીમો", vis_kpi_teams_meta:"On the roster", vis_register:"પધરામણી રજિસ્ટર", vis_devotee:"શ્રદ્ધાળુ", vis_purpose:"હેતુ", vis_address:"સરનામું", vis_datetime:"તારીખ અને સમય", vis_escort:"એસ્કોર્ટ ટીમ", vis_none:"No visits match.", vis_escort_ph:"Team that carries the palki & manages the visit", vis_need_name:"Devotee name is required.", vis_need_date:"Date is required.", vis_explain:"પધરામણી એટલે માતાજીની મૂર્તિ કે ભુવાજી (મંદિરના માધ્યમ) ને શ્રદ્ધાળુના ઘર, દુકાન કે પ્રસંગમાં આશીર્વાદ માટે લઈ જવામાં આવે. એસ્કોર્ટ ટીમ એ સ્વયંસેવક જૂથ છે જે પાલખી ઊંચકે, આરતી થાળી અને ભીડ સંભાળે, મૂર્તિની સલામતી અને પરત યાત્રાનું આયોજન કરે.", vis_p_home_inauguration:"નવું ઘર / વાસ્તુ", vis_p_shop_opening:"દુકાન ઉદ્ઘાટન", vis_p_wedding_blessing:"લગ્ન આશીર્વાદ", vis_p_health_blessing:"આરોગ્ય", vis_p_business_puja:"ધંધો / ફેક્ટરી પૂજા", vis_p_festival_padhramani:"ઉત્સવ પધરામણી", vis_p_other:"અન્ય", vis_s_requested:"વિનંતી", vis_s_scheduled:"નિર્ધારિત", vis_s_confirmed:"પુષ્ટ", vis_s_completed:"પૂર્ણ", vis_s_cancelled:"રદ", cal_title:"સંકલિત મંદિર કેલેન્ડર", cal_sub:"પૂજા, સમિતિ બેઠકો, કાર્યક્રમો, વચનબદ્ધ દાન અને પધરામણી — એક જ જગ્યાએ", cal_next:"આગળ", cal_up_next:"હવે પછી", cal_item:"બાબત", cal_type:"પ્રકાર", cal_nothing:"આ મહિને કંઈ નિર્ધારિત નથી.", cal_poojas:"પૂજા", cal_meetings:"બેઠકો", cal_events:"કાર્યક્રમો", cal_donations:"વચનો", cal_visits:"પધરામણી", cal_pledge:"વચનબદ્ધ દાન", cal_mon:"સોમ", cal_tue:"મંગળ", cal_wed:"બુધ", cal_thu:"ગુરુ", cal_fri:"શુક્ર", cal_sat:"શનિ", cal_sun:"રવિ", mg_lead:"મેનેજમેન્ટ આગેવાન", mg_volunteer:"સ્વયંસેવક", mg_id:"આઈડી", pj_inv_royal:"રોયલ (વિધિવત્)", pj_inv_cream:"ક્રીમ (સાદું)", pj_inv_festival:"ઉત્સવ", pj_inv_lang_app:"એપ પ્રમાણે", pj_inv_template:"ટેમ્પલેટ", pj_inv_language:"કાર્ડ ભાષા", pj_inv_accent:"એક્સેન્ટ રંગ", pj_inv_headline:"શીર્ષક", pj_inv_line:"આમંત્રણ પંક્તિ", pj_inv_blessing:"સમાપન આશીર્વાદ", pj_inv_show_schedule:"સંપૂર્ણ સત્ર કાર્યક્રમ બતાવો", pj_inv_show_sevarthi:"સેવાર્થી નામ બતાવો", pj_inv_show_guests:"મહેમાન / પંડિત બતાવો", pj_inv_save:"કાર્ડ સાચવો", pj_inv_print:"પ્રિન્ટ / PDF", pj_inv_sub2:"પૂજામાંથી આપોઆપ ભરાયેલું. લખાણ, રંગ અને ભાષા બદલો, પછી પ્રિન્ટ કરો અથવા PDF (A5) સાચવો.", pj_edit_pooja:'પૂજા સંપાદિત કરો', pj_all_poojas:'બધી પૂજાઓ', pj_sessions_word:'સત્રો', dash_kpi_pooja:'આજની પૂજાઓ', dash_kpi_don:'આ મહિને દાન', dash_kpi_accounts:'અધિકૃત ખાતાં', dash_kpi_accounts_meta:'પ્લેટફોર્મ ઍક્સેસ સાથે', dash_kpi_month:'આ મહિને', dash_glance:'તમારા મંદિરની એક ઝલક', dash_attention:'ધ્યાન આપવા જેવું', dash_today_temple:'આજે સમગ્ર મંદિરમાં', dash_today_area:'આજે તમારા વિસ્તારમાં', dash_today:'આજે', dash_quiet:'શાંત દિવસ — કંઈ નિર્ધારિત નથી.', dash_your_area:'તમારો વિસ્તાર', dash_no_assign:'તમને હજી કંઈ સોંપાયું નથી.', dash_on_file:'રેકોર્ડમાં', dash_items:'વસ્તુઓ', dash_vouchers:'વાઉચર', dash_a_pledged:'દાન વચન વસૂલાત બાકી', dash_a_visits:'ભુવાજી પધરામણી વિનંતી મંજૂરી બાકી', dash_a_sevarthi:'સેવાર્થી વગરની પૂજાઓ', dash_a_stock:'ઓછો કે ખતમ સ્ટોક વસ્તુઓ', dash_a_attend:'ઓછી બેઠક હાજરીવાળી સમિતિઓ', nav_puja_s:'પૂજા અને સેવા', nav_management_s:'મેનેજમેન્ટ ઍપ્સ', nav_devotees_s:'ભક્તો', nav_inventory_s:'ભંડાર', nav_expenses_s:'ખર્ચ', role_superadmin:'સુપર એડમિન', role_management_lead:'મેનેજમેન્ટ લીડ', role_pooja_coordinator:'પૂજા સંયોજક', role_committee_leader:'સમિતિ આગેવાન', role_event_incharge:'કાર્યક્રમ ઇન્ચાર્જ', role_accountant:'હિસાબનીશ', acc_title:'ખાતાં અને ઍક્સેસ', acc_sub:'દરેક અધિકૃત ખાતું, તે શું ખોલી શકે, અને જીવંત ઓડિટ ટ્રેલ', acc_kpi_total:'અધિકૃત ખાતાં', acc_kpi_total_meta:'બધી ભૂમિકાઓમાં', acc_kpi_admin:'સુપર એડમિન', acc_kpi_admin_meta:'સંપૂર્ણ પ્લેટફોર્મ ઍક્સેસ', acc_kpi_leaders:'આગેવાનો અને સંયોજકો', acc_kpi_leaders_meta:'તેમના વિસ્તાર પૂરતું', acc_kpi_roles:'ઍક્સેસ ભૂમિકાઓ', acc_kpi_roles_meta:'વ્યાખ્યાયિત ભૂમિકા પ્રકાર', acc_by_role:'ભૂમિકા પ્રમાણે ઍક્સેસ', acc_can_open:'ખોલી શકે', acc_everything:'બધું', acc_accounts:'ખાતાં', acc_account_ct:'ખાતું', acc_roles:'ભૂમિકાઓ', acc_signin:'આ રૂપે સાઇન ઇન કરો', acc_audit:'ઓડિટ ટ્રેલ', acc_audit_meta:'જીવંત, દરેક મોડ્યુલમાંથી સંકલિત', acc_module:'મોડ્યુલ', acc_action:'ક્રિયા', acc_when:'ક્યારે', rep_title:'રિપોર્ટ અને વિશ્લેષણ', rep_sub:'ચાલુ મહિના માટે દરેક મોડ્યુલમાંથી જીવંત આંકડા', rep_export_all:'પ્રવૃત્તિ લોગ નિકાસ', rep_don:'દાન (રોકડ, મહિનો)', rep_donkind:'વસ્તુ મૂલ્ય (મહિનો)', rep_exp:'ખર્ચ (કુલ)', rep_dev:'નોંધાયેલા ભક્તો', rep_pooja:'પૂજાઓ', rep_cmt:'સમિતિ હાજરી', rep_ev:'કાર્યક્રમો', rep_vis:'ભુવાજી પધરામણી', set_title:'પ્લેટફોર્મ સેટિંગ્સ', set_sub:'મંદિર ઓળખ, ભાષા અને ડેમો ડેટા', set_identity:'મંદિર ઓળખ', set_name:'મંદિરનું નામ', set_loc:'સ્થળ', set_email:'સંપર્ક ઈમેલ', set_phone:'સંપર્ક ફોન', set_platform:'પ્લેટફોર્મ', set_lang:'ડિફોલ્ટ ભાષા', set_clock:'ડેમો ઘડિયાળ', set_accounts_hint:'પ્લેટફોર્મ ઍક્સેસ સંચાલિત કરો', set_page:'પાના પર', set_reset:'નવું લોડ — બધો ડેમો ડેટા રીસેટ કરો', set_clock_title:'કાર્ય તારીખ અને ડેટા', set_clock_sub:'દરેક ડેશબોર્ડ, કેલેન્ડર, પૂજા/કાર્યક્રમ સ્થિતિ અને માસિક રિપોર્ટ આ તારીખ પ્રમાણે ગણાય છે. રેકોર્ડ સમય સાથે કેવી રીતે બદલાય તે જોવા આને ખસેડો.', set_clock_apply:'કાર્ય તારીખ લાગુ કરો', set_clock_reset:'મૂળ તારીખે રીસેટ કરો', set_clock_note:'કસ્ટમ કાર્ય તારીખ સક્રિય છે અને રીલોડ પર યાદ રહે છે.', set_clock_bad:'માન્ય તારીખ પસંદ કરો.', set_clock_done:'કાર્ય તારીખ સેટ કરી', set_reset_confirm:'ફરી લોડ કરી બધો ડેમો ડેટા રીસેટ કરવો?', set_saved:'મંદિર માહિતી સાચવી.', teams_moved:'સ્ટાફ અને સ્વયંસેવક ટીમો હવે મેનેજમેન્ટ મોડ્યુલમાં છે', teams_moved_sub:'સ્વયંસેવક ટીમો, લીડ સોંપણી, સેવા સમયપત્રક, હાજરી અને બેજ બધું મેનેજમેન્ટ ઍપ્સમાં છે.', teams_open:'મેનેજમેન્ટ ઍપ્સ ખોલો', lang_switched:'ભાષા બદલાઈ'
+    }
+  };
+
+  /* Fixed vocabulary of DATA values that should localize on display.
+     Keyed by the canonical English string. */
+  var DATA = {
+    hi: {
+      /* committees / samaj */
+      'Rabari Samaj':'रबारी समाज', 'Marvadi Samaj':'मारवाड़ी समाज', 'General Committee':'सामान्य समिति',
+      /* cities */
+      'Sanand':'साणंद', 'Ahmedabad':'अहमदाबाद', 'Bavla':'बावळा', 'Viramgam':'विरमगाम',
+      'Changodar':'चांगोदर', 'Gujarat':'गुजरात',
+      /* guest / pandit roles */
+      'Pandit':'पंडित', 'Chief Guest':'मुख्य अतिथि', 'Guest of Honour':'सम्माननीय अतिथि',
+      'Trust President':'ट्रस्ट अध्यक्ष', 'Trustee':'ट्रस्टी', 'Yagna Acharya':'यज्ञ आचार्य',
+      'Path Acharya':'पाठ आचार्य', 'Mahila Mandal Head':'महिला मंडल प्रमुख', 'Chief Priest':'मुख्य पुजारी',
+      'Guest':'अतिथि', 'Volunteer':'स्वयंसेवक', 'Coordinator':'समन्वयक',
+      /* pooja type categories */
+      'Special Havan':'विशेष हवन', 'Daily Ritual':'नित्य विधि', 'Abhishek':'अभिषेक',
+      'Shanti Pooja':'शांति पूजा', 'Path':'पाठ', 'Special Yagna':'विशेष यज्ञ', 'Seva':'सेवा',
+      'Prasad':'प्रसाद', 'Sthapana':'स्थापना', 'Havan':'हवन', 'Utsav':'उत्सव'
+    },
+    gu: {
+      'Rabari Samaj':'રબારી સમાજ', 'Marvadi Samaj':'મારવાડી સમાજ', 'General Committee':'સામાન્ય સમિતિ',
+      'Sanand':'સાણંદ', 'Ahmedabad':'અમદાવાદ', 'Bavla':'બાવળા', 'Viramgam':'વિરમગામ',
+      'Changodar':'ચાંગોદર', 'Gujarat':'ગુજરાત',
+      'Pandit':'પંડિત', 'Chief Guest':'મુખ્ય મહેમાન', 'Guest of Honour':'સન્માનનીય મહેમાન',
+      'Trust President':'ટ્રસ્ટ પ્રમુખ', 'Trustee':'ટ્રસ્ટી', 'Yagna Acharya':'યજ્ઞ આચાર્ય',
+      'Path Acharya':'પાઠ આચાર્ય', 'Mahila Mandal Head':'મહિલા મંડળ પ્રમુખ', 'Chief Priest':'મુખ્ય પૂજારી',
+      'Guest':'મહેમાન', 'Volunteer':'સ્વયંસેવક', 'Coordinator':'સંયોજક',
+      'Special Havan':'વિશેષ હવન', 'Daily Ritual':'નિત્ય વિધિ', 'Abhishek':'અભિષેક',
+      'Shanti Pooja':'શાંતિ પૂજા', 'Path':'પાઠ', 'Special Yagna':'વિશેષ યજ્ઞ', 'Seva':'સેવા',
+      'Prasad':'પ્રસાદ', 'Sthapana':'સ્થાપના', 'Havan':'હવન', 'Utsav':'ઉત્સવ'
+    }
+  };
+
+  var _lang = 'en';
+  try { var s = localStorage.getItem(LS_KEY); if (s && LANGS.indexOf(s) !== -1) _lang = s; } catch (e) {}
+
+  var _hooks = [];
+
+  window.I18N = UI;
+  window.currentLang = function () { return _lang; };
+  window.onLanguageChange = function (fn) { if (typeof fn === 'function') _hooks.push(fn); };
+
+  /** UI string by key, with graceful fallback (en → key). */
+  window.t = function (key, fallback) {
+    var d = UI[_lang] || UI.en;
+    if (d[key] != null) return d[key];
+    if (UI.en[key] != null) return UI.en[key];
+    return fallback != null ? fallback : key;
+  };
+
+  /** Localize a known DATA value (name/category/role/city). Unknown → returned as-is. */
+  window.tData = function (value) {
+    if (value == null || _lang === 'en') return value == null ? '' : value;
+    var map = DATA[_lang] || {};
+    return map[value] != null ? map[value] : value;
+  };
+
+  /** Pick obj.field_<lang> if present, else obj.field. */
+  window.tField = function (obj, field) {
+    if (!obj) return '';
+    if (_lang !== 'en' && obj[field + '_' + _lang] != null && obj[field + '_' + _lang] !== '') {
+      return obj[field + '_' + _lang];
+    }
+    return obj[field] != null ? obj[field] : '';
+  };
+
+  /** Walk the DOM and apply data-i18n / data-i18n-ph / data-i18n-html. */
+  window.applyStaticI18n = function (root) {
+    var scope = root || document;
+    scope.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var v = window.t(el.getAttribute('data-i18n'));
+      if (v != null) el.textContent = v;
+    });
+    scope.querySelectorAll('[data-i18n-ph]').forEach(function (el) {
+      var v = window.t(el.getAttribute('data-i18n-ph'));
+      if (v != null) el.setAttribute('placeholder', v);
+    });
+    scope.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+      var v = window.t(el.getAttribute('data-i18n-html'));
+      if (v != null) el.innerHTML = v;
+    });
+    document.documentElement.setAttribute('lang', _lang);
+  };
+
+  /** Public entry — used by the topbar <select> and on load. */
+  window.setLanguage = function (lang, opts) {
+    if (LANGS.indexOf(lang) === -1) lang = 'en';
+    _lang = lang;
+    try { localStorage.setItem(LS_KEY, lang); } catch (e) {}
+    window.applyStaticI18n();
+    _hooks.forEach(function (fn) { try { fn(lang); } catch (e) {} });
+    if (opts && opts.announce !== false && typeof showToast === 'function') {
+      var names = { en: 'English', hi: 'हिन्दी (Hindi)', gu: 'ગુજરાતી (Gujarati)' };
+      showToast(window.t('lang_switched') + ': ' + names[lang]);
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var sel = document.getElementById('langSelect');
+    if (sel) sel.value = _lang;
+    window.applyStaticI18n();
+    _hooks.forEach(function (fn) { try { fn(_lang); } catch (e) {} });
+  });
+})();

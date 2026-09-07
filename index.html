@@ -3,12 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shri Visat Meldi Mata Mandir — Temple Management Platform</title>
-  
-  <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="styles.css">
+  <title>Shri Vihat Meldi Mata Mandir — Temple Management Platform</title>
+
+  <link rel="icon" type="image/png" href="assets/icon.png">
+
+  <!-- Splash loader — inlined so it paints instantly, before styles.css / JS
+       have downloaded (matters most on a fresh GitHub Pages visit). -->
+  <style id="loaderStyle">
+    html.is-loading, body.is-loading { overflow: hidden; }
+    #appLoader {
+      position: fixed; inset: 0; z-index: 99999;
+      display: grid; place-items: center;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(232,197,120,0.35), transparent 60%),
+        radial-gradient(circle at 50% 38%, #FFFDF7 0%, #F4E8CF 62%, #EAD8B4 100%);
+      transition: opacity .5s ease, visibility .5s ease;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    #appLoader.ldr-done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .ldr-inner { display: flex; flex-direction: column; align-items: center; gap: 1.05rem; padding: 1.75rem; text-align: center; max-width: 90vw; }
+    .ldr-mandala { width: min(58vw, 224px); aspect-ratio: 1 / 1; position: relative; }
+    .ldr-mandala svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .ldr-ring-o { animation: ldrSpin 16s linear infinite; }
+    .ldr-ring-m { animation: ldrSpin 11s linear infinite reverse; }
+    .ldr-core   { animation: ldrPulse 2.6s ease-in-out infinite; }
+    .ldr-ring-o, .ldr-ring-m, .ldr-core { transform-box: fill-box; transform-origin: center; }
+    .ldr-glow   { animation: ldrGlow 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+    @keyframes ldrSpin { to { transform: rotate(360deg); } }
+    @keyframes ldrPulse { 0%,100% { transform: scale(0.955); } 50% { transform: scale(1.05); } }
+    @keyframes ldrGlow { 0%,100% { opacity: .45; transform: scale(0.9); } 50% { opacity: .8; transform: scale(1.08); } }
+    .ldr-title {
+      font-family: 'Cinzel', 'Noto Serif Gujarati', Georgia, serif;
+      font-weight: 700; color: #6B1F2A; letter-spacing: .5px; line-height: 1.25;
+      font-size: clamp(1.05rem, 4.6vw, 1.55rem);
+    }
+    .ldr-sub {
+      font-family: 'Noto Serif Gujarati', Georgia, serif; color: #C96A20; font-weight: 600;
+      font-size: clamp(.85rem, 3.7vw, 1.08rem);
+    }
+    .ldr-track {
+      width: min(78vw, 300px); height: 6px; border-radius: 999px; margin-top: .2rem;
+      background: rgba(107,31,42,.14); overflow: hidden;
+    }
+    .ldr-bar {
+      width: 8%; height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, #6B1F2A, #C96A20 55%, #E6C978);
+      box-shadow: 0 0 12px rgba(201,106,32,.55);
+      transition: width .25s ease;
+    }
+    .ldr-hint {
+      font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase; color: #9c8050;
+      min-height: 1em;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ldr-ring-o, .ldr-ring-m, .ldr-core, .ldr-glow { animation: none; }
+      #appLoader { transition: none; }
+    }
+  </style>
+
+  <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="is-loading">
+
+<div id="appLoader" role="status" aria-live="polite" aria-label="Loading Shri Vihat Meldi Mata Mandir">
+  <div class="ldr-inner">
+    <div class="ldr-mandala" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <defs>
+          <radialGradient id="ldrGlowGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#F0C86A" stop-opacity="0.75"/>
+            <stop offset="70%" stop-color="#F0C86A" stop-opacity="0"/>
+          </radialGradient>
+          <path id="ldrPetal" d="M100 40 C118 60 118 86 100 104 C82 86 82 60 100 40 Z"/>
+          <path id="ldrLeaf"  d="M100 66 C110 78 110 92 100 102 C90 92 90 78 100 66 Z"/>
+        </defs>
+        <circle class="ldr-glow" cx="100" cy="100" r="96" fill="url(#ldrGlowGrad)"/>
+        <g class="ldr-ring-o" fill="rgba(201,162,74,0.08)" stroke="#C9A24A" stroke-width="1.1">
+          <circle cx="100" cy="100" r="90" fill="none"/>
+          <circle cx="100" cy="100" r="82" fill="none" stroke-dasharray="2 6"/>
+          <use href="#ldrPetal" transform="rotate(0 100 100)"/>
+          <use href="#ldrPetal" transform="rotate(45 100 100)"/>
+          <use href="#ldrPetal" transform="rotate(90 100 100)"/>
+          <use href="#ldrPetal" transform="rotate(135 100 100)"/>
+          <use href="#ldrPetal" transform="rotate(180 100 100)"/>
+          <use href="#ldrPetal" transform="rotate(225 100 100)"/>
+          <use href="#ldrPetal" transform="rotate(270 100 100)"/>
+          <use href="#ldrPetal" transform="rotate(315 100 100)"/>
+        </g>
+        <g class="ldr-ring-m" fill="rgba(201,106,32,0.10)" stroke="#C96A20" stroke-width="1.1">
+          <circle cx="100" cy="100" r="62" fill="none"/>
+          <use href="#ldrLeaf" transform="rotate(22.5 100 100)"/>
+          <use href="#ldrLeaf" transform="rotate(67.5 100 100)"/>
+          <use href="#ldrLeaf" transform="rotate(112.5 100 100)"/>
+          <use href="#ldrLeaf" transform="rotate(157.5 100 100)"/>
+          <use href="#ldrLeaf" transform="rotate(202.5 100 100)"/>
+          <use href="#ldrLeaf" transform="rotate(247.5 100 100)"/>
+          <use href="#ldrLeaf" transform="rotate(292.5 100 100)"/>
+          <use href="#ldrLeaf" transform="rotate(337.5 100 100)"/>
+        </g>
+        <g class="ldr-core" fill="none" stroke="#6B1F2A" stroke-width="1.6">
+          <circle cx="100" cy="100" r="38"/>
+          <rect x="76" y="76" width="48" height="48" transform="rotate(45 100 100)"/>
+          <rect x="76" y="76" width="48" height="48"/>
+          <circle cx="100" cy="100" r="19" fill="#C9A24A" stroke="none"/>
+          <text x="100" y="110" text-anchor="middle" stroke="none" fill="#6B1F2A"
+                font-family="'Noto Serif Gujarati', Georgia, serif" font-size="24" font-weight="700">ૐ</text>
+        </g>
+      </svg>
+    </div>
+    <div class="ldr-title">શ્રી વિહત મેલડી માતા મંદિર</div>
+    <div class="ldr-sub">જય શ્રી વિહત મેલડી માતાજી 🙏</div>
+    <div class="ldr-track"><div class="ldr-bar" id="ldrBar"></div></div>
+    <div class="ldr-hint" id="ldrHint">Preparing the mandir</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var loader = document.getElementById('appLoader');
+  if (!loader) return;
+  var bar = document.getElementById('ldrBar');
+  var hint = document.getElementById('ldrHint');
+  var pct = 8, target = 12, done = false, hi = 0;
+  var t0 = Date.now();
+  var MIN_SHOW = 1500;   // floor so a cached / fast load still shows the mandir, never a flash
+  var hints = ['Preparing the mandir', 'Lighting the diyas', 'Gathering the seva records', 'Almost ready'];
+  function paint() { if (bar) bar.style.width = pct.toFixed(1) + '%'; }
+  function tick() {
+    if (done) return;
+    pct += (target - pct) * 0.14;
+    if (target < 90) target += 0.4;                 // gentle creep until a real signal
+    paint();
+    requestAnimationFrame(tick);
+  }
+  window.__boot = function (t, msg) {
+    target = Math.max(target, Math.min(t, 100));
+    if (msg && hint) hint.textContent = msg;
+  };
+  var rot = setInterval(function () {
+    if (done || !hint) return;
+    hi = (hi + 1) % 3;
+    hint.textContent = hints[hi];
+  }, 1500);
+  document.addEventListener('DOMContentLoaded', function () { window.__boot(84, hints[2]); });
+  window.addEventListener('load', finish);
+  var guard = setTimeout(finish, 8000);             // never trap the user
+  function finish() {
+    if (done) return;
+    done = true;
+    clearInterval(rot); clearTimeout(guard);
+    target = 100; pct = 100; paint();
+    if (hint) hint.textContent = hints[3];
+    // If the real load was slow this waits 0ms; if it was fast, hold to MIN_SHOW.
+    setTimeout(close, Math.max(0, MIN_SHOW - (Date.now() - t0)));
+  }
+  function close() {
+    loader.classList.add('ldr-done');
+    setTimeout(function () {
+      var h = document.documentElement, b = document.body;
+      h.classList.remove('is-loading'); b.classList.remove('is-loading');
+      if (loader.parentNode) loader.parentNode.removeChild(loader);
+    }, 620);
+  }
+  document.documentElement.classList.add('is-loading');
+  requestAnimationFrame(tick);
+})();
+</script>
 
 <div id="app">
 
@@ -17,118 +177,122 @@
        ========================================== -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <!-- Temple Emblem SVG -->
-      <svg class="temple-emblem-svg" viewBox="0 0 100 100">
-        <defs>
-          <linearGradient id="emblemGold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#E6C978" />
-            <stop offset="50%" stop-color="#C9A24A" />
-            <stop offset="100%" stop-color="#C96A20" />
-          </linearGradient>
-        </defs>
-        <circle cx="50" cy="50" r="46" fill="none" stroke="url(#emblemGold)" stroke-width="2.5"/>
-        <circle cx="50" cy="50" r="38" fill="none" stroke="#E6C978" stroke-width="1" stroke-dasharray="3,2"/>
-        <!-- Kalash / Temple Silhouette -->
-        <path d="M50 12 L56 24 L64 24 L58 32 L62 44 L50 38 L38 44 L42 32 L36 24 L44 24 Z" fill="url(#emblemGold)"/>
-        <path d="M28 72 C28 55 72 55 72 72 L76 82 L24 82 Z" fill="url(#emblemGold)"/>
-        <circle cx="50" cy="50" r="6" fill="#FFFFFF"/>
-      </svg>      <div class="sidebar-brand-text">
-        <div class="sidebar-logo-title" data-i18n="temple_name">श्री विसात मेलडी माता</div>
-        <div class="sidebar-logo-subtitle" data-i18n="temple_loc">Sanand, Gujarat Platform</div>
+      <img src="assets/icon.png" class="temple-emblem-img" alt="Shri Vihat Meldi Mata Mandir"
+           onerror="this.onerror=null;this.replaceWith(Object.assign(document.createElement('div'),{className:'temple-emblem-fallback',innerHTML:'🛕'}))">
+      <div class="sidebar-brand-text">
+        <div class="sidebar-logo-title" data-i18n="temple_name">શ્રી વિહત મેલડી માતા</div>
+        <div class="sidebar-logo-subtitle" data-i18n="temple_loc">Sanand, Gujarat</div>
       </div>
     </div>
 
     <div class="sidebar-nav">
-      <div class="nav-group-title" data-i18n="nav_main">Main Navigation</div>
+      <div class="nav-group-title" data-i18n="nav_grp_overview">Overview</div>
 
       <div class="nav-item active" data-page="dashboard">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        <span data-i18n="nav_dashboard">Dashboard Launcher</span>
+        <span data-i18n="nav_dashboard">🏠 Dashboard</span>
       </div>
+
+      <div class="nav-item" data-page="calendar">
+        <span data-i18n="nav_calendar">🗓️ Unified Calendar</span>
+      </div>
+
+      <div class="nav-group-title" data-i18n="nav_grp_seva">Seva &amp; Events</div>
 
       <div class="nav-item" data-page="puja">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v6M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h6M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>
-        <span data-i18n="nav_puja">🪔 Pooja & Seva</span>
+        <span data-i18n="nav_puja">🪔 Pooja &amp; Seva</span>
       </div>
 
-      <div class="nav-item" data-page="donations">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        <span data-i18n="nav_donations">💰 Donations</span>
+      <div class="nav-item" data-page="events">
+        <span data-i18n="nav_events">📅 Events</span>
       </div>
+
+      <div class="nav-item" data-page="visits">
+        <span data-i18n="nav_visits">🙏 Bappa / Bhuvaji Visits</span>
+      </div>
+
+      <div class="nav-group-title" data-i18n="nav_grp_people">People &amp; Governance</div>
 
       <div class="nav-item" data-page="devotees">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span data-i18n="nav_devotees">👥 Devotees</span>
       </div>
 
       <div class="nav-item" data-page="committees">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 10h6v11H9z"/></svg>
         <span data-i18n="nav_committees">🏛️ Committee / Samaj</span>
       </div>
 
-      <div class="nav-item" data-page="teams">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span data-i18n="nav_teams">👷 Staff & Teams</span>
+      <div class="nav-item nav-item-featured" data-page="management">
+        <span data-i18n="nav_management">🗂️ Management Apps</span>
       </div>
 
-      <div class="nav-item" data-page="events">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span data-i18n="nav_events">📅 Events</span>
-      </div>
+      <div class="nav-group-title" data-i18n="nav_grp_resources">Donations &amp; Resources</div>
 
-      <div class="nav-item" data-page="inventory">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-        <span data-i18n="nav_inventory">📦 Inventory</span>
+      <div class="nav-item" data-page="donations">
+        <span data-i18n="nav_donations">💰 Donations</span>
       </div>
 
       <div class="nav-item" data-page="expenses">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
         <span data-i18n="nav_expenses">💸 Expenses</span>
       </div>
 
-      <div class="nav-group-title" data-i18n="nav_ops">Platform & Operations</div>
-
-      <div class="nav-item" data-page="visits">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <span data-i18n="nav_visits">🙏 Bappa / Bhuvaji Visits</span>
+      <div class="nav-item" data-page="inventory">
+        <span data-i18n="nav_inventory">📦 Inventory</span>
       </div>
 
-      <div class="nav-item" data-page="calendar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <span data-i18n="nav_calendar">🗓️ Unified Calendar</span>
-      </div>
+      <div class="nav-group-title" data-i18n="nav_grp_admin">Administration</div>
 
       <div class="nav-item" data-page="reports">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <span data-i18n="nav_reports">📊 Reports</span>
       </div>
 
       <div class="nav-item" data-page="settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span data-i18n="nav_settings">⚙️ Settings</span>
       </div>
 
       <div class="nav-item" data-page="admin">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span data-i18n="nav_admin">🛡️ Security & Audit</span>
+        <span data-i18n="nav_admin">🛡️ Accounts &amp; Access</span>
       </div>
     </div>
 
-    <!-- Decorative Diya Flame Footer -->
+    <!-- Sacred Diya (Deepak) Footer -->
     <div class="sidebar-footer">
-      <svg class="sidebar-diya-graphic" viewBox="0 0 100 100">
-        <path d="M50 12 C55 32 70 42 70 62 C70 78 60 86 50 86 C40 86 30 78 30 62 C30 42 45 32 50 12 Z" fill="url(#sidebarFlameGradient)" />
-        <path d="M15 62 Q50 92 85 62 Q90 82 50 88 Q10 82 15 62 Z" fill="#E6C978"/>
-        <defs>
-          <linearGradient id="sidebarFlameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#FFFFFF" />
-            <stop offset="35%" stop-color="#E6C978" />
-            <stop offset="70%" stop-color="#C96A20" />
-            <stop offset="100%" stop-color="#6B1F2A" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <div style="font-size: 0.75rem; color: var(--gold-light); font-family: var(--font-heading); font-weight: 700;">जय श्री विसात मेलडी माताजी</div>
+      <div class="sacred-diya" aria-hidden="true">
+        <svg viewBox="0 0 120 120">
+          <defs>
+            <radialGradient id="diyaAura" cx="50%" cy="44%" r="52%">
+              <stop offset="0%" stop-color="#FFE9A8" stop-opacity="0.95"/>
+              <stop offset="42%" stop-color="#F0A63C" stop-opacity="0.34"/>
+              <stop offset="100%" stop-color="#F0A63C" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="diyaFlame" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FFFDF5"/><stop offset="30%" stop-color="#FFE7A0"/>
+              <stop offset="63%" stop-color="#F6A83B"/><stop offset="100%" stop-color="#CE5E1C"/>
+            </linearGradient>
+            <linearGradient id="diyaFlameCore" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FFFFFF"/><stop offset="68%" stop-color="#FFEEC2"/>
+              <stop offset="100%" stop-color="#FFC766"/>
+            </linearGradient>
+            <linearGradient id="diyaBody" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#EDBA5E"/><stop offset="45%" stop-color="#C6892F"/>
+              <stop offset="100%" stop-color="#6B3B12"/>
+            </linearGradient>
+            <linearGradient id="diyaRim" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#EEC77E"/><stop offset="50%" stop-color="#FBEFC9"/>
+              <stop offset="100%" stop-color="#DCAB53"/>
+            </linearGradient>
+          </defs>
+          <ellipse class="diya-aura" cx="60" cy="54" rx="48" ry="48" fill="url(#diyaAura)"/>
+          <g class="diya-flame">
+            <path d="M60 18 C48 34 51 48 60 56 C69 48 72 34 60 18 Z" fill="url(#diyaFlame)"/>
+            <path d="M60 30 C54 39 55 48 60 54 C65 48 66 39 60 30 Z" fill="url(#diyaFlameCore)"/>
+          </g>
+          <ellipse cx="60" cy="62" rx="5" ry="2.6" fill="#3F240F"/>
+          <path d="M16 66 Q60 60 104 66 Q106 75 92 84 Q60 98 28 84 Q14 75 16 66 Z" fill="url(#diyaBody)"/>
+          <path d="M16 66 Q60 57 104 66 Q60 74 16 66 Z" fill="url(#diyaRim)"/>
+          <path d="M16 66 Q5 65 1 71 Q9 73 18 70 Z" fill="url(#diyaBody)"/>
+          <path d="M49 92 Q60 99 71 92 Q67 101 60 101 Q53 101 49 92 Z" fill="#7A4417"/>
+        </svg>
+      </div>
+      <div class="sidebar-footer-blessing" data-i18n="banner_headline">જય શ્રી વિહત મેલડી માતાજી</div>
     </div>
   </aside>
 
@@ -145,12 +309,13 @@
         </button>
 
         <div class="header-logo-title">
-          <span>श्री विसात मेलडी माता मंदिर</span>
+          <img src="assets/icon.png" class="header-emblem-img" alt="" aria-hidden="true" onerror="this.style.display='none'">
+          <span data-i18n="temple_name">શ્રી વિહત મેલડી માતા મંદિર</span>
         </div>
 
         <div class="nav-search">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="globalSearchInput" placeholder="Search devotees, receipts, poojas..." oninput="handleGlobalSearch(this.value)">
+          <input type="text" id="globalSearchInput" data-i18n-ph="search_placeholder" placeholder="Search devotees, receipts, poojas..." oninput="handleGlobalSearch(this.value)">
         </div>
       </div>
 
@@ -158,8 +323,8 @@
         <!-- Language Selector -->
         <div class="lang-select-wrapper">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          <select id="langSelect" onchange="changeLanguage(this.value)">
-            <option value="en" selected>English</option>
+          <select id="langSelect" onchange="setLanguage(this.value)">
+            <option value="en">English</option>
             <option value="hi">हिन्दी (Hindi)</option>
             <option value="gu">ગુજરાતી (Gujarati)</option>
           </select>
@@ -172,12 +337,14 @@
             <option value="admin">Super Admin (Full Platform)</option>
             <option value="pooja_manager">Pooja Manager Scope</option>
             <option value="accountant">Temple Accountant Scope</option>
-            <option value="parking_head">Parking Team Head Scope</option>
+            <optgroup label="Management Lead Scope" id="roleLeadGroup"></optgroup>
+            <optgroup label="Pooja Coordinator Scope" id="roleCoordGroup"></optgroup>
+            <optgroup label="Committee Leader Scope" id="roleCmtGroup"></optgroup>
           </select>
         </div>
 
         <!-- Login / Auth Trigger -->
-        <button class="btn btn-outline" style="padding: 0.35rem 0.85rem; font-size: 0.82rem;" onclick="openModal('modalLogin')" data-i18n="sign_in">
+        <button class="btn btn-outline nav-signin-btn" style="padding: 0.35rem 0.85rem; font-size: 0.82rem;" onclick="openModal('modalLogin')" data-i18n="sign_in">
           🔐 Sign In
         </button>
 
@@ -190,7 +357,7 @@
         <!-- User Profile Dropdown -->
         <div class="user-profile-menu" onclick="openModal('modalLogin')">
           <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" class="user-avatar" alt="Admin Avatar">
-          <span class="user-name">Administrator</span>
+          <span class="user-name" id="topbarUserName">Administrator</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
       </div>
@@ -203,266 +370,124 @@
            PAGE 1: DASHBOARD
            ========================================== -->
       <section class="page active" id="page-dashboard">
-        <!-- Divine Mandala Welcome Banner -->
+        <!-- ==========================================
+             DIVINE MANDALA WELCOME BANNER (Cream / Temple Art)
+             ========================================== -->
         <div class="welcome-banner">
-          <div class="banner-text-area">
-            <div class="banner-subtitle-sanskrit" data-i18n="jai_maa">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
-              जय श्री विसात मेलडी माताजी 🙏
-            </div>
-            <h1 class="banner-title" data-i18n="temple_name">Shri Visat Meldi Mata Mandir</h1>
-            <div class="banner-tagline" data-i18n="sub_tagline">Sanand, Gujarat — Central Management Platform</div>
-          </div>
 
-          <div class="hanging-diya-container">
+          <!-- Shared gradient definitions for diyas & temple stone -->
+          <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+            <defs>
+              <linearGradient id="flameGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FFF6DC"/><stop offset="45%" stop-color="#E6C978"/>
+                <stop offset="100%" stop-color="#E88535"/>
+              </linearGradient>
+              <linearGradient id="lampGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#E6C978"/><stop offset="100%" stop-color="#C96A20"/>
+              </linearGradient>
+            </defs>
+          </svg>
+
+          <!-- Left decorative mandala quarter -->
+          <svg class="banner-mandala banner-mandala-left" viewBox="0 0 200 200" aria-hidden="true">
+            <g fill="none" stroke="#C9A24A" stroke-width="1">
+              <circle cx="0" cy="100" r="120"/><circle cx="0" cy="100" r="98"/>
+              <circle cx="0" cy="100" r="76"/><circle cx="0" cy="100" r="54"/>
+              <g stroke-width="1.1">
+                <path d="M0 100 m40 0 a20 20 0 0 1 34 -14 a20 20 0 0 1 -34 42 z"/>
+                <path d="M0 40 q60 20 70 60 q-50 -10 -70 -60 z"/>
+                <path d="M0 160 q60 -20 70 -60 q-50 10 -70 60 z"/>
+                <path d="M0 100 q80 -50 108 0 q-28 50 -108 0 z"/>
+              </g>
+            </g>
+          </svg>
+
+          <!-- Right decorative mandala quarter -->
+          <svg class="banner-mandala banner-mandala-right" viewBox="0 0 200 200" aria-hidden="true">
+            <g fill="none" stroke="#C9A24A" stroke-width="1">
+              <circle cx="200" cy="100" r="120"/><circle cx="200" cy="100" r="98"/>
+              <circle cx="200" cy="100" r="76"/><circle cx="200" cy="100" r="54"/>
+              <g stroke-width="1.1">
+                <path d="M200 40 q-60 20 -70 60 q50 -10 70 -60 z"/>
+                <path d="M200 160 q-60 -20 -70 -60 q50 10 70 60 z"/>
+                <path d="M200 100 q-80 -50 -108 0 q28 50 108 0 z"/>
+              </g>
+            </g>
+          </svg>
+
+          <!-- Hanging diyas — LEFT pair -->
+          <div class="hanging-diya-container diya-left">
             <div class="hanging-diya">
               <div class="diya-string"></div>
-              <svg width="26" height="26" viewBox="0 0 100 100"><path d="M50 20 Q75 60 50 90 Q25 60 50 20 Z" fill="#E88535"/><circle cx="50" cy="50" r="10" fill="#FFF"/></svg>
+              <svg class="diya-lamp" viewBox="0 0 60 70">
+                <ellipse cx="30" cy="14" rx="7" ry="9" fill="url(#flameGrad)"/>
+                <path d="M8 30 Q30 26 52 30 Q46 52 30 56 Q14 52 8 30 Z" fill="url(#lampGrad)"/>
+                <path d="M4 30 Q30 22 56 30 Q30 38 4 30 Z" fill="#E6C978"/>
+                <path d="M18 56 Q30 66 42 56" fill="none" stroke="#C9A24A" stroke-width="2"/>
+              </svg>
             </div>
-            <div class="hanging-diya" style="animation-delay: -2.2s;">
-              <div class="diya-string" style="height: 52px;"></div>
-              <svg width="30" height="30" viewBox="0 0 100 100"><path d="M50 20 Q75 60 50 90 Q25 60 50 20 Z" fill="#E6C978"/><circle cx="50" cy="50" r="10" fill="#FFF"/></svg>
+            <div class="hanging-diya" style="animation-delay:-2.2s">
+              <div class="diya-string" style="height:64px"></div>
+              <svg class="diya-lamp" viewBox="0 0 60 70" style="width:30px">
+                <ellipse cx="30" cy="14" rx="6" ry="8" fill="url(#flameGrad)"/>
+                <path d="M8 30 Q30 26 52 30 Q46 52 30 56 Q14 52 8 30 Z" fill="url(#lampGrad)"/>
+                <path d="M4 30 Q30 22 56 30 Q30 38 4 30 Z" fill="#E6C978"/>
+              </svg>
             </div>
           </div>
 
+          <!-- Hanging diyas — RIGHT pair -->
+          <div class="hanging-diya-container diya-right">
+            <div class="hanging-diya" style="animation-delay:-1.4s">
+              <div class="diya-string" style="height:58px"></div>
+              <svg class="diya-lamp" viewBox="0 0 60 70" style="width:30px">
+                <ellipse cx="30" cy="14" rx="6" ry="8" fill="url(#flameGrad)"/>
+                <path d="M8 30 Q30 26 52 30 Q46 52 30 56 Q14 52 8 30 Z" fill="url(#lampGrad)"/>
+                <path d="M4 30 Q30 22 56 30 Q30 38 4 30 Z" fill="#E6C978"/>
+              </svg>
+            </div>
+            <div class="hanging-diya" style="animation-delay:-3.1s">
+              <div class="diya-string" style="height:88px"></div>
+              <svg class="diya-lamp" viewBox="0 0 60 70">
+                <ellipse cx="30" cy="14" rx="7" ry="9" fill="url(#flameGrad)"/>
+                <path d="M8 30 Q30 26 52 30 Q46 52 30 56 Q14 52 8 30 Z" fill="url(#lampGrad)"/>
+                <path d="M4 30 Q30 22 56 30 Q30 38 4 30 Z" fill="#E6C978"/>
+                <path d="M18 56 Q30 66 42 56" fill="none" stroke="#C9A24A" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Centered greeting -->
+          <div class="banner-text-area">
+            <h1 class="banner-title banner-headline" data-i18n="banner_headline">જય શ્રી વિહત મેલડી માતાજી</h1>
+            <div class="banner-flourish" aria-hidden="true">
+              <svg viewBox="0 0 220 16" preserveAspectRatio="xMidYMid meet">
+                <g fill="none" stroke="#C9A24A" stroke-width="1.4">
+                  <path d="M2 8 H78"/><path d="M142 8 H218"/>
+                  <path d="M96 8 q7 -7 14 0 q7 7 14 0"/>
+                </g>
+                <circle cx="110" cy="8" r="2.4" fill="#C96A20"/>
+                <circle cx="82" cy="8" r="1.6" fill="#C9A24A"/><circle cx="138" cy="8" r="1.6" fill="#C9A24A"/>
+              </svg>
+            </div>
+            <div class="banner-tagline" data-i18n="banner_tagline">માતાજીની કૃપા, ભક્તોની શ્રદ્ધા</div>
+            <div class="banner-khamma" data-i18n="banner_khamma">ખમ્મા માડી, ખમ્મા 🙏</div>
+            <div class="banner-welcome-chip">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span><span data-i18n="welcome_back">Welcome back</span>, <strong id="bannerAdminName">Admin</strong></span>
+              <span class="banner-chip-dot"></span>
+              <span data-i18n="temple_loc">Sanand, Gujarat</span>
+            </div>
+          </div>
+
+          <!-- Detailed temple silhouette (right) -->
           <div class="banner-mandir-graphic">
-            <svg width="170" height="100" viewBox="0 0 200 120">
-              <path d="M100 10 L125 45 L75 45 Z" fill="#E6C978"/>
-              <path d="M65 45 L135 45 L135 115 L65 115 Z" fill="#C9A24A" fill-opacity="0.3"/>
-              <path d="M85 70 A15 15 0 0 1 115 70 L115 115 L85 115 Z" fill="#E6C978"/>
-              <circle cx="100" cy="26" r="4.5" fill="#E88535"/>
-            </svg>
+            <img src="assets/temple.png" alt="Shri Vihat Meldi Mata Mandir" onerror="this.closest('.banner-mandir-graphic').style.display='none'">
           </div>
         </div>
 
-        <!-- 4 Top Stat KPI Cards -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-card-info">
-              <span class="stat-card-title" data-i18n="kpi_seva">Today's Seva Bookings</span>
-              <span class="stat-card-value">86</span>
-              <span class="stat-card-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-                +8.1% vs yesterday
-              </span>
-            </div>
-            <div class="stat-card-icon-wrapper icon-diya-bg">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h6M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>
-            </div>
-          </div>
+        <div id="dashboardRoot"></div>
 
-          <div class="stat-card">
-            <div class="stat-card-info">
-              <span class="stat-card-title" data-i18n="kpi_donations">Today's Donations</span>
-              <span class="stat-card-value">₹1,84,500</span>
-              <span class="stat-card-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-                +12.8% this week
-              </span>
-            </div>
-            <div class="stat-card-icon-wrapper icon-donation-bg">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="18"/></svg>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-card-info">
-              <span class="stat-card-title" data-i18n="kpi_devotees">Registered Devotees</span>
-              <span class="stat-card-value">12,486</span>
-              <span class="stat-card-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-                +4.2% growth
-              </span>
-            </div>
-            <div class="stat-card-icon-wrapper icon-devotees-bg">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-card-info">
-              <span class="stat-card-title" data-i18n="kpi_visits">Temple Visits Today</span>
-              <span class="stat-card-value">1,248</span>
-              <span class="stat-card-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-                +15.4% visitors
-              </span>
-            </div>
-            <div class="stat-card-icon-wrapper icon-events-bg">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions Row -->
-        <div class="quick-actions-section">
-          <div class="section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            <span data-i18n="quick_actions">Operational Quick Actions</span>
-          </div>
-          <div class="quick-actions-grid">
-            <div class="action-tile" onclick="openModal('modalSchedulePuja')">
-              <div class="action-tile-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M12 18v4M4.93 4.93l4.24 4.24"/></svg></div>
-              <span data-i18n="action_book_seva">Book Seva</span>
-            </div>
-            <div class="action-tile" onclick="openModal('modalRecordDonation')">
-              <div class="action-tile-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-              <span data-i18n="action_record_donation">Record Donation</span>
-            </div>
-            <div class="action-tile" onclick="openModal('modalAddDevotee')">
-              <div class="action-tile-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg></div>
-              <span data-i18n="action_add_devotee">Add Devotee</span>
-            </div>
-            <div class="action-tile" onclick="openModal('modalAddExpense')">
-              <div class="action-tile-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
-              <span data-i18n="action_add_expense">Add Expense</span>
-            </div>
-            <div class="action-tile" onclick="openModal('modalBadgeViewer')">
-              <div class="action-tile-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/></svg></div>
-              <span data-i18n="action_qr_badge">QR Badge</span>
-            </div>
-            <div class="action-tile" onclick="switchPage('events')">
-              <div class="action-tile-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/></svg></div>
-              <span data-i18n="action_events">Events</span>
-            </div>
-            <div class="action-tile" onclick="switchPage('inventory')">
-              <div class="action-tile-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
-              <span data-i18n="action_inventory">Inventory</span>
-            </div>
-            <div class="action-tile" onclick="switchPage('reports')">
-              <div class="action-tile-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div>
-              <span data-i18n="action_reports">Reports</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Apps Launcher Cards Grid -->
-        <div class="section-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          <span data-i18n="modules_launcher">Management Modules Launcher</span>
-        </div>
-        <div class="apps-grid">
-          <div class="app-card" onclick="switchPage('puja')">
-            <div class="app-card-header">
-              <div class="app-card-icon">🪔</div>
-              <div class="app-card-title">Pooja Management</div>
-            </div>
-            <div class="app-card-context">36 Poojas Master Catalog, Priest Schedules & Responsibilities</div>
-            <div class="app-card-footer">
-              <span>36 Poojas Master</span>
-              <span>Open App →</span>
-            </div>
-          </div>
-
-          <div class="app-card" onclick="switchPage('donations')">
-            <div class="app-card-header">
-              <div class="app-card-icon" style="background: #FFF5EC; color: #C96A20;">💰</div>
-              <div class="app-card-title">Donation Management</div>
-            </div>
-            <div class="app-card-context">Receipt Generation, 80G Certificates & Financial Register</div>
-            <div class="app-card-footer">
-              <span>₹18.42L This Month</span>
-              <span>Open App →</span>
-            </div>
-          </div>
-
-          <div class="app-card" onclick="switchPage('devotees')">
-            <div class="app-card-header">
-              <div class="app-card-icon" style="background: #FDF9EE; color: #C9A24A;">👥</div>
-              <div class="app-card-title">Devotee Register</div>
-            </div>
-            <div class="app-card-context">Central Person Profiles, Samaj & Committee Linking</div>
-            <div class="app-card-footer">
-              <span>12,486 Registered</span>
-              <span>Open App →</span>
-            </div>
-          </div>
-
-          <div class="app-card" onclick="switchPage('inventory')">
-            <div class="app-card-header">
-              <div class="app-card-icon" style="background: #EAF3EC; color: #4C8B5A;">📦</div>
-              <div class="app-card-title">Inventory Management</div>
-            </div>
-            <div class="app-card-context">Pooja Materials, Prasad, Incense & Temple Supplies Stock</div>
-            <div class="app-card-footer">
-              <span>Stock Status</span>
-              <span>Open App →</span>
-            </div>
-          </div>
-
-          <div class="app-card" onclick="switchPage('expenses')">
-            <div class="app-card-header">
-              <div class="app-card-icon" style="background: #FEF3C7; color: #D97706;">💸</div>
-              <div class="app-card-title">Expense Management</div>
-            </div>
-            <div class="app-card-context">Maintenance, Electricity, Cleaning & Event Vouchers</div>
-            <div class="app-card-footer">
-              <span>Financial Logs</span>
-              <span>Open App →</span>
-            </div>
-          </div>
-
-          <div class="app-card" onclick="switchPage('events')">
-            <div class="app-card-header">
-              <div class="app-card-icon" style="background: #FBF0EF; color: #B84A42;">📅</div>
-              <div class="app-card-title">Event Management</div>
-            </div>
-            <div class="app-card-context">Poonam Dayro Mahotsav, Special Functions & Navratri Planning</div>
-            <div class="app-card-footer">
-              <span>Upcoming Events</span>
-              <span>Open App →</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2-Column Grid: Charts -->
-        <div class="dashboard-2col">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Monthly Donation Trends</div>
-              <select class="form-select" style="width: auto; padding: 0.25rem 0.6rem; font-size: 0.8rem;">
-                <option>Year 2026</option>
-                <option>Year 2025</option>
-              </select>
-            </div>
-            <div class="card-body">
-              <div class="chart-container">
-                <canvas id="donationBarChart"></canvas>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Donation Breakdown</div>
-            </div>
-            <div class="card-body">
-              <div class="donut-legend-container">
-                <div style="width: 140px; height: 140px; position: relative;">
-                  <canvas id="sourcesDonutChart" width="140" height="140"></canvas>
-                </div>
-                <div class="legend-list">
-                  <div class="legend-item">
-                    <div><span class="legend-color-box" style="background: #6B1F2A;"></span>General Donation</div>
-                    <strong>48%</strong>
-                  </div>
-                  <div class="legend-item">
-                    <div><span class="legend-color-box" style="background: #C96A20;"></span>Pooja / Seva</div>
-                    <strong>32%</strong>
-                  </div>
-                  <div class="legend-item">
-                    <div><span class="legend-color-box" style="background: #C9A24A;"></span>Temple Construction</div>
-                    <strong>12%</strong>
-                  </div>
-                  <div class="legend-item">
-                    <div><span class="legend-color-box" style="background: #EFE3CF;"></span>Annadan / Bhojan</div>
-                    <strong>8%</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
       <!-- ==========================================
@@ -472,7 +497,7 @@
         <div class="flex justify-between items-center" style="margin-bottom: 1.5rem;">
           <div>
             <h1 class="banner-title" style="font-size: 1.5rem; color: var(--primary-maroon);">Devotee Register</h1>
-            <p style="font-size: 0.85rem; color: var(--muted-brown);">Central Person Model & Profiles for Shri Visat Meldi Mata Mandir</p>
+            <p style="font-size: 0.85rem; color: var(--muted-brown);">Central Person Model & Profiles for Shri Vihat Meldi Mata Mandir</p>
           </div>
           <button class="btn btn-primary" onclick="openModal('modalAddDevotee')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -518,240 +543,48 @@
            PAGE 3: POOJA & SEVA
            ========================================== -->
       <section class="page" id="page-puja">
-        <div class="flex justify-between items-center" style="margin-bottom: 1.5rem;">
-          <div>
-            <h1 class="banner-title" style="font-size: 1.5rem; color: var(--primary-maroon);">🪔 Pooja & Seva Management</h1>
-            <p style="font-size: 0.85rem; color: var(--muted-brown);">36 Pooja Master Catalog, Scheduling & Priest Roster</p>
-          </div>
-          <button class="btn btn-primary" onclick="openModal('modalSchedulePuja')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Book Seva Slot
-          </button>
-        </div>
-
-        <div class="dashboard-2col">
-          <div class="card">
-            <div class="card-header"><div class="card-title">36 Pooja Master Catalog</div></div>
-            <div class="card-body" style="padding: 0;">
-              <table class="custom-table">
-                <thead>
-                  <tr><th>#</th><th>Pooja Name</th><th>Duration</th><th>Default Fee</th><th>Action</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>1</td><td><strong>Visat Meldi Mata Vishesh Havan</strong></td><td>60 mins</td><td>₹1,100</td><td><button class="btn btn-outline" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="openModal('modalSchedulePuja')">Book</button></td></tr>
-                  <tr><td>2</td><td><strong>Maha Aarti & Deepotsav</strong></td><td>30 mins</td><td>₹501</td><td><button class="btn btn-outline" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="openModal('modalSchedulePuja')">Book</button></td></tr>
-                  <tr><td>3</td><td><strong>Rudrabhishek Seva</strong></td><td>45 mins</td><td>₹1,100</td><td><button class="btn btn-outline" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="openModal('modalSchedulePuja')">Book</button></td></tr>
-                  <tr><td>4</td><td><strong>Navgraha Shanti Pooja</strong></td><td>90 mins</td><td>₹1,251</td><td><button class="btn btn-outline" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="openModal('modalSchedulePuja')">Book</button></td></tr>
-                  <tr><td>5</td><td><strong>Chandi Path & Archana</strong></td><td>120 mins</td><td>₹2,100</td><td><button class="btn btn-outline" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="openModal('modalSchedulePuja')">Book</button></td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header"><div class="card-title">Today's Pooja Roster</div></div>
-            <div class="card-body">
-              <div class="summary-list">
-                <div class="summary-item">
-                  <div>
-                    <strong>05:30 AM - Mangala Aarti</strong>
-                    <div style="font-size: 0.8rem; color: var(--muted-brown);">Lead Priest: Shastri Ramesh Joshi</div>
-                  </div>
-                  <span class="badge badge-confirmed">Completed</span>
-                </div>
-                <div class="summary-item">
-                  <div>
-                    <strong>08:00 AM - Morning Pooja</strong>
-                    <div style="font-size: 0.8rem; color: var(--muted-brown);">Lead Priest: Shastri Ramesh Joshi</div>
-                  </div>
-                  <span class="badge badge-confirmed">Completed</span>
-                </div>
-                <div class="summary-item">
-                  <div>
-                    <strong>12:00 PM - Rajbhog Seva</strong>
-                    <div style="font-size: 0.8rem; color: var(--muted-brown);">Devotee: Rameshbhai Rabari</div>
-                  </div>
-                  <span class="badge badge-pending">Upcoming</span>
-                </div>
-                <div class="summary-item">
-                  <div>
-                    <strong>07:00 PM - Sandhya Aarti</strong>
-                    <div style="font-size: 0.8rem; color: var(--muted-brown);">Public Darshan</div>
-                  </div>
-                  <span class="badge badge-pending">Upcoming</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div id="poojaScopeBanner"></div>
+        <div id="poojaRoot"></div>
       </section>
 
       <!-- ==========================================
            PAGE 4: DONATIONS
            ========================================== -->
       <section class="page" id="page-donations">
-        <div class="flex justify-between items-center" style="margin-bottom: 1.5rem;">
-          <div>
-            <h1 class="banner-title" style="font-size: 1.5rem; color: var(--primary-maroon);">💰 Donation Management</h1>
-            <p style="font-size: 0.85rem; color: var(--muted-brown);">Receipt Generation, 80G Certificates & Financial Register</p>
-          </div>
-          <button class="btn btn-primary" onclick="openModal('modalRecordDonation')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Record Donation
-          </button>
-        </div>
+        <div id="donationsRoot"></div>
+      </section>
 
-        <div class="card">
-          <div class="card-header flex justify-between items-center">
-            <div class="card-title">Donation Receipts Register</div>
-            <button class="btn btn-outline" style="font-size: 0.8rem;" onclick="showToast('Exporting Donations CSV log...')">Export CSV</button>
-          </div>
-          <div class="card-body" style="padding: 0;">
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>Receipt No</th>
-                  <th>Donor Name</th>
-                  <th>Category</th>
-                  <th>Mode</th>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="donationsTableBody">
-                <!-- Rendered dynamically -->
-              </tbody>
-            </table>
-          </div>
-        </div>
+      <!-- ==========================================
+           PAGE: MANAGEMENT APPS
+           Admin Portal → Management Directory → Workspace
+           Lead Portal  → My Managements    → Workspace
+           Rendered entirely by management-ui.js
+           ========================================== -->
+      <section class="page" id="page-management">
+        <div id="leadScopeBanner"></div>
+        <div id="managementRoot"></div>
       </section>
 
       <!-- ==========================================
            PAGE 5: COMMITTEE / SAMAJ
            ========================================== -->
       <section class="page" id="page-committees">
-        <h1 class="banner-title" style="font-size: 1.5rem; color: var(--primary-maroon); margin-bottom: 1rem;">🏛️ Committee & Samaj Register</h1>
-        <div class="apps-grid">
-          <div class="card" style="padding: 1.25rem;">
-            <span class="badge badge-maroon" style="margin-bottom: 0.5rem;">Core Committee</span>
-            <h3 style="color: var(--primary-maroon); font-family: var(--font-heading);">Rabari Samaj Committee</h3>
-            <p style="font-size: 0.85rem; color: var(--muted-brown); margin: 0.5rem 0;">Sanand Region Executive Temple Council</p>
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--saffron);">👥 45 Members Registered</div>
-          </div>
-          <div class="card" style="padding: 1.25rem;">
-            <span class="badge badge-maroon" style="margin-bottom: 0.5rem;">Core Committee</span>
-            <h3 style="color: var(--primary-maroon); font-family: var(--font-heading);">Marvadi Samaj Committee</h3>
-            <p style="font-size: 0.85rem; color: var(--muted-brown); margin: 0.5rem 0;">Trustee & Festival Celebration Council</p>
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--saffron);">👥 32 Members Registered</div>
-          </div>
-          <div class="card" style="padding: 1.25rem;">
-            <span class="badge badge-confirmed" style="margin-bottom: 0.5rem;">Executive Board</span>
-            <h3 style="color: var(--primary-maroon); font-family: var(--font-heading);">General Temple Committee</h3>
-            <p style="font-size: 0.85rem; color: var(--muted-brown); margin: 0.5rem 0;">Overall Operations & Trust Management Board</p>
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--saffron);">👥 60 Members Registered</div>
-          </div>
-        </div>
+        <div id="committeeScopeBanner"></div>
+        <div id="committeeRoot"></div>
       </section>
 
       <!-- ==========================================
            PAGE 6: STAFF & TEAMS
            ========================================== -->
       <section class="page" id="page-teams">
-        <div class="flex justify-between items-center" style="margin-bottom: 1.5rem;">
-          <div>
-            <h1 class="banner-title" style="font-size: 1.5rem; color: var(--primary-maroon);">👷 Staff & Volunteer Teams</h1>
-            <p style="font-size: 0.85rem; color: var(--muted-brown);">Manage Shift Rosters, Volunteer Applications & Member Badges</p>
-          </div>
-          <div class="flex gap-2">
-            <button class="btn btn-outline" onclick="openModal('modalJoinTeam')">
-              Public Volunteer Link
-            </button>
-            <button class="btn btn-secondary" onclick="openBadgeGeneratorModal()">
-              Generate Member Badge
-            </button>
-          </div>
-        </div>
-
-        <div class="dashboard-2col">
-          <div class="card">
-            <div class="card-header"><div class="card-title">Active Management Teams</div></div>
-            <div class="card-body">
-              <div class="summary-list">
-                <div class="summary-item">
-                  <div>
-                    <strong>🚗 Parking Management Team</strong>
-                    <div style="font-size: 0.8rem; color: var(--muted-brown);">Lead: Rameshbhai Rabari | 24 Volunteers</div>
-                  </div>
-                  <span class="badge badge-confirmed">On Shift</span>
-                </div>
-                <div class="summary-item">
-                  <div>
-                    <strong>🛕 Mandir Handling Team</strong>
-                    <div style="font-size: 0.8rem; color: var(--muted-brown);">Lead: Harish Patel | 18 Volunteers</div>
-                  </div>
-                  <span class="badge badge-confirmed">On Shift</span>
-                </div>
-                <div class="summary-item">
-                  <div>
-                    <strong>🍲 Bhojan Shala & Prasad Team</strong>
-                    <div style="font-size: 0.8rem; color: var(--muted-brown);">Lead: Manjula Ben | 30 Volunteers</div>
-                  </div>
-                  <span class="badge badge-confirmed">On Shift</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header"><div class="card-title">Pending Volunteer Applications</div></div>
-            <div class="card-body">
-              <div class="summary-list">
-                <div class="summary-item">
-                  <div>
-                    <strong>Jayesh Marvadi</strong>
-                    <div style="font-size: 0.8rem; color: var(--muted-brown);">Applied for: Parking Team</div>
-                  </div>
-                  <button class="btn btn-outline" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;" onclick="approveVolunteer(this)">Approve</button>
-                </div>
-                <div class="summary-item">
-                  <div>
-                    <strong>Pooja Rabari</strong>
-                    <div style="font-size: 0.8rem; color: var(--muted-brown);">Applied for: Bhojan Shala Team</div>
-                  </div>
-                  <button class="btn btn-outline" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;" onclick="approveVolunteer(this)">Approve</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div id="teamsRedirectRoot"></div>
       </section>
 
       <!-- ==========================================
            PAGE 7: EVENTS
            ========================================== -->
       <section class="page" id="page-events">
-        <h1 class="banner-title" style="font-size: 1.5rem; color: var(--primary-maroon); margin-bottom: 1rem;">📅 Temple Events</h1>
-        <div class="apps-grid">
-          <div class="card" style="padding: 1.25rem;">
-            <span class="badge badge-maroon" style="margin-bottom: 0.5rem;">Religious Mahotsav</span>
-            <h3 style="color: var(--primary-maroon); font-family: var(--font-heading);">Meldi Mata Poonam Dayro</h3>
-            <p style="font-size: 0.85rem; color: var(--muted-brown); margin: 0.5rem 0;">Full Moon Night Bhajan, Dayro & Annakut Mahaprasad</p>
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--saffron);">📅 15 Sept 2026 | 08:00 PM onwards</div>
-          </div>
-          <div class="card" style="padding: 1.25rem;">
-            <span class="badge badge-pending" style="margin-bottom: 0.5rem;">Special Festival</span>
-            <h3 style="color: var(--primary-maroon); font-family: var(--font-heading);">Navratri Mahotsav</h3>
-            <p style="font-size: 0.85rem; color: var(--muted-brown); margin: 0.5rem 0;">9 Days Garba, Chandi Path Havan & Daily Maha Aarti</p>
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--saffron);">📅 22 Sept 2026 onwards</div>
-          </div>
-          <div class="card" style="padding: 1.25rem;">
-            <span class="badge badge-confirmed" style="margin-bottom: 0.5rem;">Seva Mahotsav</span>
-            <h3 style="color: var(--primary-maroon); font-family: var(--font-heading);">Sharad Purnima Seva</h3>
-            <p style="font-size: 0.85rem; color: var(--muted-brown); margin: 0.5rem 0;">Kheer Mahaprasad distribution & Special Aarti</p>
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--saffron);">📅 06 Oct 2026</div>
-          </div>
-        </div>
+        <div id="eventsRoot"></div>
       </section>
 
       <!-- ==========================================
@@ -840,162 +673,35 @@
            PAGE 10: BAPPA VISITS
            ========================================== -->
       <section class="page" id="page-visits">
-        <h1 class="banner-title" style="font-size: 1.5rem; color: var(--primary-maroon); margin-bottom: 1rem;">🙏 Bappa / Bhuvaji Visit Scheduling</h1>
-        <div class="card">
-          <div class="card-header"><div class="card-title">Scheduled Home & Shop Blessing Visits</div></div>
-          <div class="card-body" style="padding: 0;">
-            <table class="custom-table">
-              <thead>
-                <tr><th>Devotee Name</th><th>Visit Purpose</th><th>Address / City</th><th>Date & Time</th><th>Escort Team</th><th>Status</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>Rameshbhai Rabari</td><td>New Home Inauguration</td><td>Sanand, Gujarat</td><td>22 Sept 2026, 11:00 AM</td><td>VIP Escort Team</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
-                <tr><td>Kiran Joshi</td><td>Shop Opening Blessing</td><td>Sanand Market</td><td>25 Sept 2026, 04:00 PM</td><td>Mandir Handling Team</td><td><span class="badge badge-pending">Scheduled</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <div id="visitsRoot"></div>
       </section>
 
       <!-- ==========================================
            PAGE 11: UNIFIED CALENDAR
            ========================================== -->
       <section class="page" id="page-calendar">
-        <h1 class="banner-title" style="font-size: 1.5rem; color: var(--primary-maroon); margin-bottom: 1rem;">🗓️ Unified Temple Calendar</h1>
-        <div class="card" style="padding: 1.5rem;">
-          <div class="flex justify-between items-center" style="margin-bottom: 1rem;">
-            <h2 style="font-family: var(--font-heading); color: var(--primary-maroon);">September 2026</h2>
-            <div class="flex gap-2">
-              <span class="badge badge-maroon">🪔 Poojas</span>
-              <span class="badge badge-pending">📅 Events</span>
-              <span class="badge badge-confirmed">👷 Shifts</span>
-            </div>
-          </div>
-          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; font-weight: 700;">
-            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-          </div>
-          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 10px;" id="calendarGrid">
-            <!-- Simulated Calendar Days -->
-          </div>
-        </div>
+        <div id="calendarRoot"></div>
       </section>
 
       <!-- ==========================================
            PAGE 12: REPORTS
            ========================================== -->
       <section class="page" id="page-reports">
-        <h1 class="banner-title" style="font-size: 1.5rem; color: var(--primary-maroon); margin-bottom: 1rem;">📊 Reports & Analytics</h1>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-card-info">
-              <span class="stat-card-title">Donation Report</span>
-              <span class="stat-card-value">₹18,42,500</span>
-            </div>
-            <button class="btn btn-outline" onclick="showToast('Exporting Donation PDF Report...')">Export PDF</button>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card-info">
-              <span class="stat-card-title">Expense Summary</span>
-              <span class="stat-card-value">₹39,500</span>
-            </div>
-            <button class="btn btn-outline" onclick="showToast('Exporting Expense PDF Report...')">Export PDF</button>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card-info">
-              <span class="stat-card-title">Devotee Register Growth</span>
-              <span class="stat-card-value">+14.2%</span>
-            </div>
-            <button class="btn btn-outline" onclick="showToast('Exporting Devotee CSV Report...')">Export CSV</button>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card-info">
-              <span class="stat-card-title">Seva Bookings Report</span>
-              <span class="stat-card-value">340 Bookings</span>
-            </div>
-            <button class="btn btn-outline" onclick="showToast('Exporting Seva Log Report...')">Export PDF</button>
-          </div>
-        </div>
+        <div id="reportsRoot"></div>
       </section>
 
       <!-- ==========================================
            PAGE 13: SETTINGS
            ========================================== -->
       <section class="page" id="page-settings">
-        <h1 class="banner-title" style="font-size: 1.5rem; color: var(--primary-maroon); margin-bottom: 1rem;">⚙️ Temple Platform Settings</h1>
-        <div class="dashboard-2col">
-          <div class="card" style="padding: 1.5rem;">
-            <h3 style="color: var(--primary-maroon); font-family: var(--font-heading); margin-bottom: 1rem;">Temple Identity & Information</h3>
-            <form onsubmit="event.preventDefault(); showToast('Temple information saved!');">
-              <div class="form-group">
-                <label class="form-label">Temple Name</label>
-                <input type="text" class="form-input" value="Shri Visat Meldi Mata Mandir">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Location / Address</label>
-                <input type="text" class="form-input" value="Sanand, Gujarat, India">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Contact Email</label>
-                <input type="email" class="form-input" value="contact@visatmeldimandir.org">
-              </div>
-              <button class="btn btn-primary" type="submit">Save Changes</button>
-            </form>
-          </div>
-
-          <div class="card" style="padding: 1.5rem;">
-            <h3 style="color: var(--primary-maroon); font-family: var(--font-heading); margin-bottom: 1rem;">Security & Notifications</h3>
-            <div class="form-group">
-              <label class="form-label">SMS Alert Notifications</label>
-              <select class="form-select">
-                <option>Enabled (Realtime SMS for Receipts)</option>
-                <option>Disabled</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">80G Receipt Auto-Numbering</label>
-              <input type="text" class="form-input" value="REC-100 series">
-            </div>
-          </div>
-        </div>
+        <div id="settingsRoot"></div>
       </section>
 
       <!-- ==========================================
            PAGE 14: SECURITY AUDIT
            ========================================== -->
       <section class="page" id="page-admin">
-        <h1 class="banner-title" style="font-size: 1.5rem; color: var(--primary-maroon); margin-bottom: 1rem;">🛡️ Security & Audit Trail</h1>
-        <div class="dashboard-2col">
-          <div class="card">
-            <div class="card-header"><div class="card-title">Active User Sessions</div></div>
-            <div class="card-body" style="padding: 0;">
-              <table class="custom-table">
-                <thead>
-                  <tr><th>User</th><th>Role</th><th>Device</th><th>Action</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>Administrator</td><td>Super Admin</td><td>Chrome Desktop (Windows)</td><td><button class="btn btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="terminateSession(this)">Terminate</button></td></tr>
-                  <tr><td>Ramesh Shastri</td><td>Pooja Manager</td><td>Safari Mobile (iOS)</td><td><button class="btn btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="terminateSession(this)">Terminate</button></td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header"><div class="card-title">Real-Time Audit Trail</div></div>
-            <div class="card-body" style="padding: 0;">
-              <table class="custom-table">
-                <thead>
-                  <tr><th>Actor</th><th>Action</th><th>Timestamp</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>Admin</td><td>Issued Receipt #REC-106</td><td>10 mins ago</td></tr>
-                  <tr><td>Admin</td><td>Registered Devotee #DEV-1008</td><td>45 mins ago</td></tr>
-                  <tr><td>System</td><td>Shift Auto Roster updated</td><td>2 hours ago</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <div id="accessRoot"></div>
       </section>
 
     </div>
@@ -1004,27 +710,33 @@
 </div>
 
 <!-- ==========================================
+     PUBLIC VOLUNTEERING PAGE (no-login route: #/volunteer/<MGMT-ID>)
+     Rendered by management-ui.js → renderPublicRouter()
+     ========================================== -->
+<div id="publicVolunteerRoot"></div>
+
+<!-- ==========================================
      MOBILE BOTTOM NAVIGATION BAR
      ========================================== -->
 <nav class="mobile-bottom-nav">
   <div class="mobile-nav-item active" data-page="dashboard">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span class="mob-nav-ico">🏠</span>
     <span data-i18n="mob_home">Home</span>
   </div>
   <div class="mobile-nav-item" data-page="puja">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M12 18v4M4.93 4.93l4.24 4.24"/></svg>
+    <span class="mob-nav-ico">🪔</span>
     <span data-i18n="mob_seva">Seva</span>
   </div>
   <div class="mobile-nav-item" data-page="donations">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    <span class="mob-nav-ico">💰</span>
     <span data-i18n="mob_donations">Donations</span>
   </div>
-  <div class="mobile-nav-item" data-page="devotees">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-    <span data-i18n="mob_devotees">Devotees</span>
+  <div class="mobile-nav-item" data-page="management">
+    <span class="mob-nav-ico">🗂️</span>
+    <span data-i18n="mob_management">Teams</span>
   </div>
   <div class="mobile-nav-item" onclick="toggleSidebarMenu()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <span class="mob-nav-ico">☰</span>
     <span data-i18n="mob_more">More</span>
   </div>
 </nav>
@@ -1073,79 +785,499 @@
   </div>
 </div>
 
-<!-- Modal 2: Record Donation -->
-<div class="modal-overlay" id="modalRecordDonation">
-  <div class="modal-box">
+<!-- ==========================================
+     DONATIONS MODULE MODALS (rendered/driven by donations-forms.js)
+     ========================================== -->
+
+<!-- Record / Edit Donation -->
+<div class="modal-overlay" id="modalDonation">
+  <div class="modal-box" style="max-width: 720px;">
     <div class="modal-header">
-      <div class="modal-title">💰 Record New Donation</div>
-      <button class="modal-close-btn" onclick="closeModal('modalRecordDonation')">&times;</button>
+      <div>
+        <div class="modal-title" id="donationFormTitle">Record Donation</div>
+        <span class="mg-muted-xs">Cash or in-kind offering to the mandir</span>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('modalDonation')">&times;</button>
     </div>
     <div class="modal-body">
-      <form id="recordDonationForm" onsubmit="handleSaveDonation(event)">
+      <form id="formDonation" onsubmit="handleSaveDonation(event)">
         <div class="form-group">
-          <label class="form-label">Donor Full Name *</label>
-          <input type="text" class="form-input" id="inputDonorName" placeholder="Donor Name" required>
+          <label class="form-label" for="donFieldCategory">Donation Category *</label>
+          <select class="form-select" id="donFieldCategory" onchange="onDonationCategoryChange()"></select>
         </div>
-        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+
+        <div class="form-group">
+          <label class="form-label" for="donFieldDonor">Donor *</label>
+          <div class="flex gap-2">
+            <select class="form-select" id="donFieldDonor" onchange="onDonorSelectChange()"></select>
+            <button class="btn btn-outline" type="button" onclick="openAddDonor('donationForm')">+ New Donor</button>
+          </div>
+          <div class="mg-muted-xs" id="donDonorHint" style="margin-top:0.35rem;"></div>
+        </div>
+
+        <!-- CASH fields -->
+        <div id="donCashFields" class="grid mg-2col-form">
           <div class="form-group">
-            <label class="form-label">Amount (₹) *</label>
-            <input type="number" class="form-input" id="inputDonationAmount" placeholder="e.g. 1100" required>
+            <label class="form-label" for="donFieldAmount">Amount (₹) *</label>
+            <input type="number" class="form-input" id="donFieldAmount" min="1" placeholder="e.g. 11000">
           </div>
           <div class="form-group">
-            <label class="form-label">Category</label>
-            <select class="form-select" id="inputDonationCategory">
-              <option value="General Donation">General Donation</option>
-              <option value="Temple Renovation">Temple Renovation</option>
-              <option value="Pooja / Seva Booking">Pooja / Seva Booking</option>
-              <option value="Annadan / Bhojan">Annadan / Bhojan</option>
+            <label class="form-label" for="donFieldMode">Payment Mode *</label>
+            <select class="form-select" id="donFieldMode">
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI / GPay</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Cheque">Cheque</option>
             </select>
           </div>
         </div>
+
+        <!-- IN-KIND fields -->
+        <div id="donKindFields" hidden>
+          <div class="form-group">
+            <label class="form-label" for="donFieldItem">Item / Article Donated *</label>
+            <input type="text" class="form-input" id="donFieldItem" placeholder="e.g. Diamond ring — 3.2 ct, VVS1, 18k gold band">
+          </div>
+          <div class="grid mg-2col-form">
+            <div class="form-group">
+              <label class="form-label" for="donFieldQty">Quantity</label>
+              <input type="text" class="form-input" id="donFieldQty" placeholder="e.g. 1 pc / 2 kg / 1 cow">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="donFieldValuation">Estimated Value (₹) *</label>
+              <input type="number" class="form-input" id="donFieldValuation" min="0" placeholder="e.g. 20000000">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="donFieldDate">Date *</label>
+            <input type="date" class="form-input" id="donFieldDate" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="donFieldStatus">Status</label>
+            <select class="form-select" id="donFieldStatus">
+              <option value="received">Received</option>
+              <option value="pledged">Pledged</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="donFieldCommittee">Committee / Samaj</label>
+            <input type="text" class="form-input" id="donFieldCommittee" list="donCommitteeList" placeholder="Auto-filled from donor">
+            <datalist id="donCommitteeList">
+              <option value="Rabari Samaj"></option>
+              <option value="Marvadi Samaj"></option>
+              <option value="General Committee"></option>
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="donFieldPurpose">Purpose / Earmark</label>
+            <input type="text" class="form-input" id="donFieldPurpose" placeholder="e.g. Sabha Mandap flooring">
+          </div>
+        </div>
+
         <div class="form-group">
-          <label class="form-label">Payment Mode</label>
-          <select class="form-select" id="inputPaymentMode">
-            <option value="Cash">Cash</option>
-            <option value="UPI">UPI / GPay</option>
-            <option value="Bank Transfer">Bank Transfer</option>
-            <option value="Cheque">Cheque</option>
-          </select>
+          <label class="form-label" for="donFieldNotes">Notes</label>
+          <textarea class="form-input mg-textarea" id="donFieldNotes" rows="2" placeholder="Condition, hallmark, cheque no., anything to record"></textarea>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('modalRecordDonation')">Cancel</button>
-      <button class="btn btn-secondary" type="submit" form="recordDonationForm">Issue Official Receipt</button>
+      <button class="btn btn-outline" onclick="closeModal('modalDonation')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formDonation" id="donationFormSubmitBtn">Save &amp; Issue Receipt</button>
     </div>
   </div>
 </div>
 
-<!-- Modal 3: Book Seva / Schedule Pooja -->
-<div class="modal-overlay" id="modalSchedulePuja">
+<!-- Add / Edit Donor (individual, organization or trust) -->
+<div class="modal-overlay" id="modalDonor">
   <div class="modal-box">
     <div class="modal-header">
-      <div class="modal-title">🪔 Book Seva / Pooja Slot</div>
-      <button class="modal-close-btn" onclick="closeModal('modalSchedulePuja')">&times;</button>
+      <div class="modal-title" id="donorFormTitle">Add Donor</div>
+      <button class="modal-close-btn" onclick="closeModal('modalDonor')">&times;</button>
     </div>
     <div class="modal-body">
-      <form id="schedulePujaForm" onsubmit="handleSavePuja(event)">
+      <form id="formDonor" onsubmit="handleSaveDonor(event)">
         <div class="form-group">
-          <label class="form-label">Select Seva Type *</label>
-          <select class="form-select" id="inputPujaType">
-            <option value="Visat Meldi Mata Vishesh Havan">Visat Meldi Mata Vishesh Havan (₹1,100)</option>
-            <option value="Maha Aarti & Deepotsav">Maha Aarti & Deepotsav (₹501)</option>
-            <option value="Rudrabhishek Seva">Rudrabhishek Seva (₹1,100)</option>
-            <option value="Navgraha Shanti Havan">Navgraha Shanti Havan (₹1,251)</option>
+          <label class="form-label" for="donorFieldType">Donor Type *</label>
+          <select class="form-select" id="donorFieldType" onchange="onDonorTypeChange()">
+            <option value="individual">Individual / Devotee</option>
+            <option value="organization">Company</option>
+            <option value="trust">Trust / Foundation</option>
           </select>
         </div>
+
+        <div id="donorIndividualFields">
+          <div class="grid mg-2col-form">
+            <div class="form-group">
+              <label class="form-label" for="donorFieldFirst">First Name *</label>
+              <input type="text" class="form-input" id="donorFieldFirst">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="donorFieldLast">Last Name *</label>
+              <input type="text" class="form-input" id="donorFieldLast">
+            </div>
+          </div>
+        </div>
+
+        <div id="donorOrgFields" hidden>
+          <div class="form-group">
+            <label class="form-label" for="donorFieldOrg">Organisation / Trust Name *</label>
+            <input type="text" class="form-input" id="donorFieldOrg" placeholder="e.g. Shree Rabari Seva Trust">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="donorFieldContact">Contact Person</label>
+            <input type="text" class="form-input" id="donorFieldContact" placeholder="Authorised signatory">
+          </div>
+        </div>
+
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="donorFieldMobile">Mobile Number *</label>
+            <input type="tel" class="form-input" id="donorFieldMobile" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile" oninput="checkExistingDonor()">
+            <div id="donorExistingHint"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="donorFieldPan">PAN (for 80G)</label>
+            <input type="text" class="form-input" id="donorFieldPan" maxlength="10" placeholder="ABCDE1234F" style="text-transform:uppercase">
+          </div>
+        </div>
+
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="donorFieldCity">City</label>
+            <input type="text" class="form-input" id="donorFieldCity" placeholder="e.g. Sanand">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="donorFieldState">State</label>
+            <input type="text" class="form-input" id="donorFieldState" placeholder="e.g. Gujarat">
+          </div>
+        </div>
+
         <div class="form-group">
-          <label class="form-label">Devotee Name *</label>
-          <input type="text" class="form-input" id="inputPujaDevotee" placeholder="Devotee Name" required>
+          <label class="form-label" for="donorFieldCommittee">Committee / Samaj</label>
+          <input type="text" class="form-input" id="donorFieldCommittee" list="donCommitteeList" placeholder="e.g. Rabari Samaj">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="donorFieldNotes">Notes</label>
+          <textarea class="form-input mg-textarea" id="donorFieldNotes" rows="2"></textarea>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('modalSchedulePuja')">Cancel</button>
-      <button class="btn btn-primary" type="submit" form="schedulePujaForm">Confirm Booking</button>
+      <button class="btn btn-outline" onclick="closeModal('modalDonor')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formDonor" id="donorFormSubmitBtn">Add Donor</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Donation Category -->
+<div class="modal-overlay" id="modalDonCategory">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="donCatFormTitle">Add Donation Category</div>
+      <button class="modal-close-btn" onclick="closeModal('modalDonCategory')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formDonCategory" onsubmit="handleSaveDonCategory(event)">
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="donCatFieldName">Category Name *</label>
+            <input type="text" class="form-input" id="donCatFieldName" placeholder="e.g. Gold / Suvarna Daan" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="donCatFieldIcon">Icon (emoji)</label>
+            <input type="text" class="form-input" id="donCatFieldIcon" maxlength="2" placeholder="💰">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="donCatFieldKind">Kind *</label>
+          <select class="form-select" id="donCatFieldKind">
+            <option value="cash">Cash / money</option>
+            <option value="kind">In-kind (goods, gold, cattle, etc.)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="donCatFieldDesc">Description</label>
+          <input type="text" class="form-input" id="donCatFieldDesc" placeholder="Short note about this category">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalDonCategory')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formDonCategory" id="donCatFormSubmitBtn">Add Category</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     POOJA MODULE MODALS (rendered/driven by pooja-forms.js)
+     ========================================== -->
+
+<!-- Add / Edit Pooja -->
+<div class="modal-overlay" id="modalPooja">
+  <div class="modal-box" style="max-width: 760px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="poojaFormTitle">Create Pooja</div>
+        <span class="mg-muted-xs">Pooja & Seva event scheduling</span>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('modalPooja')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formPooja" onsubmit="handleSavePooja(event)">
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="pjFieldType">Pooja Type *</label>
+            <select class="form-select" id="pjFieldType" onchange="onPoojaTypeChange()"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pjFieldName">Pooja Name *</label>
+            <input type="text" class="form-input" id="pjFieldName" placeholder="e.g. Vihat Maa Moorti Sthapan Pooja" required>
+          </div>
+        </div>
+
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="pjFieldMode">Schedule Type *</label>
+            <select class="form-select" id="pjFieldMode" onchange="onPoojaModeChange()">
+              <option value="single">Single dated event</option>
+              <option value="multi">Multi-session (series of dates)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pjFieldAccent">Card / Calendar Colour</label>
+            <select class="form-select" id="pjFieldAccent"></select>
+          </div>
+        </div>
+
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="pjFieldDefaultVenue">Default Venue</label>
+            <input type="text" class="form-input" id="pjFieldDefaultVenue" placeholder="e.g. Main Sabha Mandap" oninput="syncDefaultVenue()">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pjFieldSevaAmount">Estimated Seva Contribution (₹)</label>
+            <input type="number" class="form-input" id="pjFieldSevaAmount" min="0" placeholder="Optional">
+            <div class="mg-muted-xs">Sevarthi's own estimated spend for reference — <strong>not a joining fee</strong>. No pooja has a fee.</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="flex justify-between items-center">
+            <label class="form-label" style="margin:0;">Sessions (date &amp; time) *</label>
+            <button class="btn btn-outline mg-btn-xs" type="button" id="pjAddSessionBtn" onclick="addSessionRow()">+ Add session</button>
+          </div>
+          <div id="pjSessionRows"></div>
+        </div>
+
+        <div class="form-group">
+          <div class="flex justify-between items-center">
+            <label class="form-label" style="margin:0;">Guests &amp; Pandits</label>
+            <button class="btn btn-outline mg-btn-xs" type="button" onclick="openAddGuest('poojaForm')">+ Add new Guest / Pandit</button>
+          </div>
+          <div class="mg-muted-xs" style="margin-bottom:0.4rem;">Tick everyone attending. Your form stays saved while you add or edit a person.</div>
+          <div id="pjGuestPicker"></div>
+        </div>
+
+        <div class="form-group">
+          <div class="flex justify-between items-center">
+            <label class="form-label" style="margin:0;">Custom Fields</label>
+            <button class="btn btn-outline mg-btn-xs" type="button" onclick="addPoojaCustomRow()">+ Add field</button>
+          </div>
+          <div id="pjCustomRows"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="pjFieldNotes">Notes</label>
+          <textarea class="form-input mg-textarea" id="pjFieldNotes" rows="2" placeholder="Internal notes, preparation instructions, etc."></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalPooja')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formPooja" id="poojaFormSubmitBtn">Create Pooja</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Sevarthi -->
+<div class="modal-overlay" id="modalSevarthi">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="sevarthiFormTitle">Add Sevarthi</div>
+        <span class="mg-muted-xs">Pooja: <strong id="sevFormPooja">—</strong></span>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('modalSevarthi')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formSevarthi" onsubmit="handleSaveSevarthi(event)">
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="sevFieldFirst">First Name *</label>
+            <input type="text" class="form-input" id="sevFieldFirst" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sevFieldLast">Last Name *</label>
+            <input type="text" class="form-input" id="sevFieldLast" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sevFieldMobile">Mobile Number *</label>
+          <input type="tel" class="form-input" id="sevFieldMobile" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile" required oninput="checkExistingSevarthi()">
+          <div id="sevExistingHint"></div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="sevFieldCity">City</label>
+            <input type="text" class="form-input" id="sevFieldCity" placeholder="e.g. Sanand">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sevFieldState">State</label>
+            <input type="text" class="form-input" id="sevFieldState" placeholder="e.g. Gujarat">
+          </div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="sevFieldCommittee">Committee / Samaj</label>
+            <input type="text" class="form-input" id="sevFieldCommittee" list="sevCommitteeList" placeholder="e.g. Rabari Samaj">
+            <datalist id="sevCommitteeList">
+              <option value="Rabari Samaj"></option>
+              <option value="Marvadi Samaj"></option>
+              <option value="General Committee"></option>
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sevFieldStatus">Status</label>
+            <select class="form-select" id="sevFieldStatus">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sevFieldNotes">Notes</label>
+          <textarea class="form-input mg-textarea" id="sevFieldNotes" rows="2" placeholder="Seva details, contribution, preferences"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalSevarthi')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formSevarthi" id="sevarthiFormSubmitBtn">Add Sevarthi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Guest or Pandit (opens on top of the Pooja form; that form is preserved) -->
+<div class="modal-overlay" id="modalGuest">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="guestFormTitle">Add Guest / Pandit</div>
+      <button class="modal-close-btn" onclick="closeModal('modalGuest')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formGuest" onsubmit="handleSaveGuest(event)">
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="gstFieldFirst">First Name *</label>
+            <input type="text" class="form-input" id="gstFieldFirst" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="gstFieldLast">Last Name</label>
+            <input type="text" class="form-input" id="gstFieldLast">
+          </div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="gstFieldRole">Role</label>
+            <input type="text" class="form-input" id="gstFieldRole" list="gstRoleList" placeholder="e.g. Pandit, Chief Guest">
+            <datalist id="gstRoleList">
+              <option value="Pandit"></option>
+              <option value="Chief Guest"></option>
+              <option value="Guest of Honour"></option>
+              <option value="Trust President"></option>
+              <option value="Trustee"></option>
+              <option value="Yagna Acharya"></option>
+              <option value="Path Acharya"></option>
+              <option value="Mahila Mandal Head"></option>
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="gstFieldMobile">Mobile Number</label>
+            <input type="tel" class="form-input" id="gstFieldMobile" maxlength="10" placeholder="10-digit mobile">
+          </div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="gstFieldCity">City</label>
+            <input type="text" class="form-input" id="gstFieldCity" placeholder="e.g. Sanand">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="gstFieldState">State</label>
+            <input type="text" class="form-input" id="gstFieldState" placeholder="e.g. Gujarat">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="gstFieldNotes">Notes</label>
+          <textarea class="form-input mg-textarea" id="gstFieldNotes" rows="2" placeholder="Travel, hospitality, speciality, etc."></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalGuest')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formGuest" id="guestFormSubmitBtn">Add Guest / Pandit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Pooja Type -->
+<div class="modal-overlay" id="modalPoojaType">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="poojaTypeFormTitle">Add Pooja Type</div>
+      <button class="modal-close-btn" onclick="closeModal('modalPoojaType')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formPoojaType" onsubmit="handleSavePoojaType(event)">
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="ptyFieldName">Type Name *</label>
+            <input type="text" class="form-input" id="ptyFieldName" placeholder="e.g. Kalash Sthapana" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ptyFieldCategory">Category</label>
+            <input type="text" class="form-input" id="ptyFieldCategory" placeholder="e.g. Sthapana, Havan, Path">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="ptyFieldDesc">Description</label>
+          <textarea class="form-input mg-textarea" id="ptyFieldDesc" rows="2" placeholder="Short description of the ritual"></textarea>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="ptyFieldDuration">Default Duration (minutes)</label>
+            <input type="number" class="form-input" id="ptyFieldDuration" min="0" placeholder="e.g. 90">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ptyFieldIcon">Icon (emoji)</label>
+            <input type="text" class="form-input" id="ptyFieldIcon" maxlength="2" placeholder="🪔">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="ptyFieldOfferings">Suggested Offerings / Samagri</label>
+          <input type="text" class="form-input" id="ptyFieldOfferings" placeholder="e.g. Ghee, flowers, kumkum, coconut">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalPoojaType')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formPoojaType" id="poojaTypeFormSubmitBtn">Add Type</button>
     </div>
   </div>
 </div>
@@ -1238,7 +1370,7 @@
       <button class="modal-close-btn" onclick="closeModal('modalJoinTeam')">&times;</button>
     </div>
     <div class="modal-body">
-      <p style="font-size: 0.85rem; color: var(--muted-brown); margin-bottom: 1rem;">Apply to serve as a volunteer at Shri Visat Meldi Mata Mandir, Sanand.</p>
+      <p style="font-size: 0.85rem; color: var(--muted-brown); margin-bottom: 1rem;">Apply to serve as a volunteer at Shri Vihat Meldi Mata Mandir, Sanand.</p>
       <form id="joinTeamForm" onsubmit="handleJoinTeam(event)">
         <div class="form-group">
           <label class="form-label">Full Name *</label>
@@ -1268,19 +1400,19 @@
   </div>
 </div>
 
-<!-- Modal 7: Receipt Viewer -->
+<!-- Modal 7: Donation document viewer (80G receipt / Dhanyavaad certificate) -->
 <div class="modal-overlay" id="modalReceiptViewer">
-  <div class="modal-box" style="max-width: 490px;">
+  <div class="modal-box mg-sheet-wide">
     <div class="modal-header">
-      <div class="modal-title">Official Temple Receipt</div>
+      <div class="modal-title" id="receiptViewerTitle">Official Temple Receipt</div>
       <button class="modal-close-btn" onclick="closeModal('modalReceiptViewer')">&times;</button>
     </div>
-    <div class="modal-body" id="receiptContent" style="background: var(--warm-ivory); border: 2px dashed var(--antique-gold); padding: 1.5rem; border-radius: var(--radius-sm);">
-      <!-- Rendered dynamically -->
+    <div class="modal-body" id="receiptContent">
+      <!-- Rendered dynamically by donations-ui.js -->
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('modalReceiptViewer')">Close</button>
-      <button class="btn btn-primary" onclick="window.print()">Print Official Receipt</button>
+      <button class="btn btn-primary" id="receiptViewerPrintBtn" onclick="printCurrentDonationDoc()">Print / Save PDF</button>
     </div>
   </div>
 </div>
@@ -1306,56 +1438,572 @@
             <path d="M50 20h5v10h-5zM50 50h30v30H50zM20 50h10v5h-10z" fill="#3B2418"/>
           </svg>
         </div>
-        <div style="font-size: 0.78rem; color: var(--gold-light); font-weight: 700;">ID: #TMB-9021 | Shri Visat Meldi Mata Mandir</div>
+        <div style="font-size: 0.78rem; color: var(--gold-light); font-weight: 700;">ID: #TMB-9021 | Shri Vihat Meldi Mata Mandir</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal 9: Split-Screen Sign In / Auth Screen -->
+<!-- Modal 9: Certificate-grade Sign In / Auth Screen -->
 <div class="modal-overlay" id="modalLogin">
-  <div class="modal-box" style="max-width: 780px;">
-    <div class="modal-body" style="padding: 0;">
-      <div style="display: grid; grid-template-columns: 1fr 1fr; min-height: 420px;">
-        <!-- Left Side: Divine Mandala Identity -->
-        <div style="background: linear-gradient(135deg, var(--primary-maroon), var(--primary-maroon-dark)); color: #FFF; padding: 2.2rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;">
-          <div style="position: absolute; inset: 0; background-image: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'40\' fill=\'none\' stroke=\'%23E6C978\' stroke-width=\'0.5\' stroke-opacity=\'0.15\'/%3E%3C/svg%3E'); pointer-events: none;"></div>
-          <div>
-            <div style="font-family: var(--font-heading); color: var(--gold-light); font-size: 1rem; margin-bottom: 0.5rem;">जय श्री विसात मेलडी माताजी 🙏</div>
-            <h2 style="font-family: var(--font-heading); font-size: 1.5rem; line-height: 1.25;">Shri Visat Meldi Mata Mandir</h2>
-            <p style="font-size: 0.85rem; opacity: 0.9; margin-top: 0.4rem;">Sanand, Gujarat — Temple Management Portal</p>
+  <div class="modal-box login-box">
+    <button class="modal-close-btn login-close" onclick="closeModal('modalLogin')" aria-label="Close">&times;</button>
+    <div class="login-grid">
+
+      <!-- Left: temple identity (certificate-grade) -->
+      <div class="login-hero">
+        <span class="login-corner c-tl"></span><span class="login-corner c-tr"></span>
+        <span class="login-corner c-bl"></span><span class="login-corner c-br"></span>
+        <img class="login-hero-wm" src="assets/temple.png" alt="" aria-hidden="true" onerror="this.style.display='none'">
+        <div class="login-hero-inner">
+          <div class="login-emblem">
+            <img src="assets/icon.png" alt="Shri Vihat Meldi Mata Mandir"
+                 onerror="this.onerror=null;this.replaceWith(Object.assign(document.createElement('div'),{className:'login-emblem-fb',innerHTML:'🛕'}))">
           </div>
-          <div style="font-size: 0.78rem; color: var(--gold-light); opacity: 0.85; border-top: 1px solid rgba(230, 201, 120, 0.2); padding-top: 0.85rem;">
-            Divine Mandala SaaS Operations Engine v2.4
+          <div class="login-ribbon">॥ જય શ્રી વિહત મેલડી માતાજી ॥</div>
+          <h2 class="login-temple">Shri Vihat Meldi Mata Mandir</h2>
+          <div class="login-temple-sub">શ્રી વિહત મેલડી માતા મંદિર &middot; સાણંદ</div>
+          <div class="login-flourish" aria-hidden="true">
+            <svg viewBox="0 0 200 12" preserveAspectRatio="xMidYMid meet">
+              <g fill="none" stroke="#E6C978" stroke-width="1.3">
+                <path d="M6 6H78"/><path d="M122 6H194"/><path d="M90 6q10-8 20 0"/>
+              </g>
+              <circle cx="100" cy="6" r="2.6" fill="#E6C978"/>
+              <circle cx="82" cy="6" r="1.7" fill="#C9A24A"/><circle cx="118" cy="6" r="1.7" fill="#C9A24A"/>
+            </svg>
+          </div>
+          <p class="login-loc">Temple Management &amp; Seva Operations Portal</p>
+
+          <div class="login-diya" aria-hidden="true">
+            <svg viewBox="0 0 120 120">
+              <defs>
+                <radialGradient id="lgDiyaAura" cx="50%" cy="44%" r="52%">
+                  <stop offset="0%" stop-color="#FFE9A8" stop-opacity="0.95"/>
+                  <stop offset="42%" stop-color="#F0A63C" stop-opacity="0.34"/>
+                  <stop offset="100%" stop-color="#F0A63C" stop-opacity="0"/>
+                </radialGradient>
+                <linearGradient id="lgDiyaFlame" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#FFFDF5"/><stop offset="30%" stop-color="#FFE7A0"/>
+                  <stop offset="63%" stop-color="#F6A83B"/><stop offset="100%" stop-color="#CE5E1C"/>
+                </linearGradient>
+                <linearGradient id="lgDiyaCore" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#FFFFFF"/><stop offset="68%" stop-color="#FFEEC2"/>
+                  <stop offset="100%" stop-color="#FFC766"/>
+                </linearGradient>
+                <linearGradient id="lgDiyaBody" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#EDBA5E"/><stop offset="45%" stop-color="#C6892F"/>
+                  <stop offset="100%" stop-color="#6B3B12"/>
+                </linearGradient>
+                <linearGradient id="lgDiyaRim" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#EEC77E"/><stop offset="50%" stop-color="#FBEFC9"/>
+                  <stop offset="100%" stop-color="#DCAB53"/>
+                </linearGradient>
+              </defs>
+              <ellipse class="diya-aura" cx="60" cy="54" rx="48" ry="48" fill="url(#lgDiyaAura)"/>
+              <g class="diya-flame">
+                <path d="M60 18 C48 34 51 48 60 56 C69 48 72 34 60 18 Z" fill="url(#lgDiyaFlame)"/>
+                <path d="M60 30 C54 39 55 48 60 54 C65 48 66 39 60 30 Z" fill="url(#lgDiyaCore)"/>
+              </g>
+              <ellipse cx="60" cy="62" rx="5" ry="2.6" fill="#3F240F"/>
+              <path d="M16 66 Q60 60 104 66 Q106 75 92 84 Q60 98 28 84 Q14 75 16 66 Z" fill="url(#lgDiyaBody)"/>
+              <path d="M16 66 Q60 57 104 66 Q60 74 16 66 Z" fill="url(#lgDiyaRim)"/>
+              <path d="M16 66 Q5 65 1 71 Q9 73 18 70 Z" fill="url(#lgDiyaBody)"/>
+              <path d="M49 92 Q60 99 71 92 Q67 101 60 101 Q53 101 49 92 Z" fill="#7A4417"/>
+            </svg>
+          </div>
+        </div>
+        <div class="login-hero-foot">માતાજીની કૃપા, ભક્તોની શ્રદ્ધા &nbsp;·&nbsp; ખમ્મા માડી 🙏</div>
+      </div>
+
+      <!-- Right: sign-in form -->
+      <div class="login-form-pane">
+        <div class="login-form-head">
+          <img class="login-form-mark" src="assets/icon.png" alt="" aria-hidden="true" onerror="this.style.display='none'">
+          <div>
+            <h3 class="login-form-title">Sign In to Portal</h3>
+            <p class="login-form-sub">Authorised temple staff only</p>
+          </div>
+        </div>
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label">Username / Mobile</label>
+            <input type="text" class="form-input" placeholder="admin@vihatmeldi.org" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Security PIN</label>
+            <input type="password" class="form-input" placeholder="••••••••" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role Context</label>
+            <select class="form-select">
+              <option>Super Admin (Full Authority)</option>
+              <option>Management Lead</option>
+              <option>Pooja Coordinator</option>
+              <option>Committee Leader</option>
+              <option>Event In-charge</option>
+              <option>Temple Accountant</option>
+            </select>
+          </div>
+          <button class="btn btn-primary w-full login-submit" type="submit">Sign In To Platform</button>
+          <p class="login-legal">Shri Vihat Meldi Mata Mandir &middot; Sanand, Gujarat</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     MANAGEMENT APP MODALS
+     ===================================================== -->
+
+<!-- Add / Edit Management (Admin only) -->
+<div class="modal-overlay" id="modalManagement">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="mgFormTitle">Add Management</div>
+      <button class="modal-close-btn" onclick="closeModal('modalManagement')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formManagement" onsubmit="handleSaveManagement(event)">
+        <div class="form-group">
+          <label class="form-label" for="mgFieldName">Management Name *</label>
+          <input type="text" class="form-input" id="mgFieldName" placeholder="e.g. Parking Management, Prasad Management" required>
+          <span class="mg-muted-xs">Any operational team — the platform is not limited to a fixed set of management types.</span>
+        </div>
+
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="mgLeadSelect">Management Lead *</label>
+            <select class="form-select" id="mgLeadSelect" required></select>
+            <span class="mg-muted-xs">The Lead can only manage the Management(s) assigned to them.</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="mgFieldSize">Expected Team Size *</label>
+            <input type="number" class="form-input" id="mgFieldSize" min="1" value="15" required>
+            <span class="mg-muted-xs" id="mgCurrentTeamNote">Current team members: 0</span>
           </div>
         </div>
 
-        <!-- Right Side: Login Form -->
-        <div style="padding: 2rem; background: #FFF; display: flex; flex-direction: column; justify-content: center; position: relative;">
-          <button class="modal-close-btn" style="position: absolute; top: 1rem; right: 1rem;" onclick="closeModal('modalLogin')">&times;</button>
-          <h3 style="font-family: var(--font-heading); color: var(--primary-maroon); margin-bottom: 1.25rem;">Sign In to Portal</h3>
-          <form onsubmit="handleLogin(event)">
-            <div class="form-group">
-              <label class="form-label">Username / Mobile</label>
-              <input type="text" class="form-input" placeholder="admin@visatmeldi.org" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Security PIN</label>
-              <input type="password" class="form-input" placeholder="••••••••" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Role Context</label>
-              <select class="form-select">
-                <option>Super Admin (Full Authority)</option>
-                <option>Pooja Manager</option>
-                <option>Temple Accountant</option>
-                <option>Parking & Operations Lead</option>
-              </select>
-            </div>
-            <button class="btn btn-primary w-full" style="margin-top: 0.5rem;" type="submit">Sign In To Platform</button>
-          </form>
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="mgFieldStatus">Status *</label>
+            <select class="form-select" id="mgFieldStatus" required>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="mgColorSelect">Team Colour Code *</label>
+            <select class="form-select" id="mgColorSelect" required onchange="previewMgColor(this.value)"></select>
+            <div class="mg-color-swatch" id="mgColorSwatch"></div>
+          </div>
         </div>
+
+        <div class="form-group">
+          <label class="form-label" for="mgFieldDesc">Description *</label>
+          <textarea class="form-input mg-textarea" id="mgFieldDesc" rows="3" placeholder="What this management team is responsible for" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="mgFieldNotes">Additional Notes</label>
+          <textarea class="form-input mg-textarea" id="mgFieldNotes" rows="2" placeholder="Internal notes, coordination details, escalation contacts"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalManagement')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formManagement" id="mgFormSubmitBtn">Create Management</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Volunteer -->
+<div class="modal-overlay" id="modalMember">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="memberFormTitle">Add Volunteer</div>
+        <span class="mg-muted-xs">Management: <strong id="memberFormMgmt">—</strong></span>
       </div>
+      <button class="modal-close-btn" onclick="closeModal('modalMember')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formMember" onsubmit="handleSaveMember(event)">
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="memFieldFirst">First Name *</label>
+            <input type="text" class="form-input" id="memFieldFirst" placeholder="e.g. Rajesh" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="memFieldLast">Last Name *</label>
+            <input type="text" class="form-input" id="memFieldLast" placeholder="e.g. Rabari" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="memFieldMobile">Mobile Number *</label>
+          <input type="tel" class="form-input" id="memFieldMobile" placeholder="10-digit mobile number"
+                 pattern="[0-9]{10}" maxlength="10" required oninput="checkExistingDevotee()">
+          <span class="mg-muted-xs">If this devotee already volunteers elsewhere, they are linked — not duplicated.</span>
+          <div id="memExistingHint"></div>
+        </div>
+
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="memFieldCity">City</label>
+            <input type="text" class="form-input" id="memFieldCity" placeholder="e.g. Sanand">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="memFieldState">State</label>
+            <input type="text" class="form-input" id="memFieldState" placeholder="e.g. Gujarat">
+          </div>
+        </div>
+
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="memFieldRole">Role in Team</label>
+            <input type="text" class="form-input" id="memFieldRole" placeholder="e.g. Volunteer, Coordinator" value="Volunteer">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="memFieldStatus">Status *</label>
+            <select class="form-select" id="memFieldStatus" required>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="memFieldNotes">Additional Notes</label>
+          <textarea class="form-input mg-textarea" id="memFieldNotes" rows="2" placeholder="Availability, language, special skills"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalMember')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formMember" id="memberFormSubmitBtn">Add Volunteer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule / Edit Volunteering -->
+<div class="modal-overlay" id="modalSession">
+  <div class="modal-box" style="max-width: 720px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="sessionFormTitle">Schedule Volunteering</div>
+        <span class="mg-muted-xs">Management: <strong id="sessionFormMgmt">—</strong></span>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('modalSession')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formSession" onsubmit="handleSaveSession(event)">
+        <div class="form-group">
+          <label class="form-label" for="sesFieldTitle">Volunteering Title *</label>
+          <input type="text" class="form-input" id="sesFieldTitle" placeholder="e.g. Navratri Evening Aarti Duty" required>
+        </div>
+
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="sesFieldDate">Date *</label>
+            <input type="date" class="form-input" id="sesFieldDate" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sesFieldLocation">Location</label>
+            <input type="text" class="form-input" id="sesFieldLocation" placeholder="e.g. Main Gate, Sabha Mandap">
+          </div>
+        </div>
+
+        <div class="grid mg-2col-form">
+          <div class="form-group">
+            <label class="form-label" for="sesFieldStart">Start Time *</label>
+            <input type="time" class="form-input" id="sesFieldStart" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sesFieldEnd">End Time *</label>
+            <input type="time" class="form-input" id="sesFieldEnd" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Select Volunteers *</label>
+          <div class="mg-pick-toolbar">
+            <span class="mg-muted-xs" id="sesPickCount">0 volunteer(s) selected</span>
+            <div class="flex gap-1">
+              <button class="btn btn-outline mg-btn-xs" type="button" onclick="toggleAllVolunteers(true)">Select All</button>
+              <button class="btn btn-outline mg-btn-xs" type="button" onclick="toggleAllVolunteers(false)">Clear</button>
+            </div>
+          </div>
+          <div class="mg-picker" id="sesVolunteerPicker"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="sesFieldNotes">Notes</label>
+          <textarea class="form-input mg-textarea" id="sesFieldNotes" rows="2" placeholder="Instructions for volunteers, reporting point, dress code"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="mg-check-inline">
+            <input type="checkbox" id="sesFieldPublic">
+            <span>Open this slot on the <strong>public volunteering page</strong> — devotees can sign up for this date &amp; time without logging in. Manage sign-ups from the <strong>Public Page</strong> tab.</span>
+          </label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalSession')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formSession" id="sessionFormSubmitBtn">Schedule Volunteering</button>
+    </div>
+  </div>
+</div>
+
+<!-- Message Draft -->
+<div class="modal-overlay" id="modalDraft">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="draftFormTitle">New Message Draft</div>
+      <button class="modal-close-btn" onclick="closeModal('modalDraft')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formDraft" onsubmit="handleSaveDraft(event)">
+        <div class="form-group">
+          <label class="form-label" for="draftFieldTitle">Draft Title *</label>
+          <input type="text" class="form-input" id="draftFieldTitle" placeholder="e.g. Duty Reminder, Thank You Message" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="draftFieldMessage">Message *</label>
+          <textarea class="form-input mg-textarea" id="draftFieldMessage" rows="7" required
+                    placeholder="Jay Meldi Maa 🙏&#10;&#10;Reminder: your volunteering duty is scheduled for..."
+                    oninput="updateDraftCount()"></textarea>
+          <span class="mg-muted-xs" id="draftCharCount">0 characters</span>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalDraft')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formDraft" id="draftFormSubmitBtn">Create Draft</button>
+    </div>
+  </div>
+</div>
+
+<!-- Generic Sheet (badge preview, send message) -->
+<div class="modal-overlay" id="mgSheet">
+  <div class="modal-box" id="mgSheetBox">
+    <div class="modal-header">
+      <div class="modal-title" id="mgSheetTitle"></div>
+      <button class="modal-close-btn" onclick="closeSheet()">&times;</button>
+    </div>
+    <div class="modal-body" id="mgSheetBody"></div>
+    <div class="modal-footer" id="mgSheetFooter"></div>
+  </div>
+</div>
+
+<!-- Generic Confirm -->
+<div class="modal-overlay" id="mgConfirm">
+  <div class="modal-box" style="max-width: 460px;">
+    <div class="modal-header">
+      <div class="modal-title" id="mgConfirmTitle">Please confirm</div>
+      <button class="modal-close-btn" onclick="closeConfirm()">&times;</button>
+    </div>
+    <div class="modal-body" id="mgConfirmBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-primary" id="mgConfirmBtn" onclick="runConfirm()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     COMMITTEE / SAMAJ MODULE MODALS
+     ========================================== -->
+<div class="modal-overlay" id="modalCommittee">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="committeeFormTitle">Add Committee</div>
+      <button class="modal-close-btn" onclick="closeModal('modalCommittee')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formCommittee" onsubmit="handleSaveCommittee(event)">
+        <div class="form-group"><label class="form-label" for="cmtFieldName">Committee Name *</label>
+          <input type="text" class="form-input" id="cmtFieldName" placeholder="e.g. Rabari Samaj Committee" required></div>
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="cmtLeadSelect">Leader *</label><select class="form-select" id="cmtLeadSelect" required></select></div>
+          <div class="form-group"><label class="form-label" for="cmtFieldSamaj">Samaj</label>
+            <input type="text" class="form-input" id="cmtFieldSamaj" list="donCommitteeList" placeholder="e.g. Rabari Samaj"></div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="cmtFieldSize">Expected Size *</label><input type="number" class="form-input" id="cmtFieldSize" min="1" value="20" required></div>
+          <div class="form-group"><label class="form-label" for="cmtFieldStatus">Status *</label><select class="form-select" id="cmtFieldStatus"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="cmtColorSelect">Colour</label><select class="form-select" id="cmtColorSelect"></select></div>
+          <div class="form-group"></div>
+        </div>
+        <div class="form-group"><label class="form-label" for="cmtFieldPurpose">Purpose *</label>
+          <textarea class="form-input mg-textarea" id="cmtFieldPurpose" rows="3" placeholder="What this committee is responsible for" required></textarea></div>
+        <div class="form-group"><label class="form-label" for="cmtFieldNotes">Notes</label>
+          <textarea class="form-input mg-textarea" id="cmtFieldNotes" rows="2"></textarea></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalCommittee')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formCommittee" id="committeeFormSubmitBtn">Create Committee</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalCmtMember">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div><div class="modal-title" id="cmtMemberFormTitle">Add Member</div>
+        <span class="mg-muted-xs">Committee: <strong id="cmtMemberFormCmt">—</strong></span></div>
+      <button class="modal-close-btn" onclick="closeModal('modalCmtMember')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formCmtMember" onsubmit="handleSaveCmtMember(event)">
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="cmmFieldFirst">First Name *</label><input type="text" class="form-input" id="cmmFieldFirst" required></div>
+          <div class="form-group"><label class="form-label" for="cmmFieldLast">Last Name *</label><input type="text" class="form-input" id="cmmFieldLast" required></div>
+        </div>
+        <div class="form-group"><label class="form-label" for="cmmFieldMobile">Mobile Number *</label>
+          <input type="tel" class="form-input" id="cmmFieldMobile" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile" required oninput="checkExistingCmtMember()">
+          <div id="cmmExistingHint"></div></div>
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="cmmFieldCity">City</label><input type="text" class="form-input" id="cmmFieldCity"></div>
+          <div class="form-group"><label class="form-label" for="cmmFieldState">State</label><input type="text" class="form-input" id="cmmFieldState"></div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="cmmFieldRole">Role</label>
+            <input type="text" class="form-input" id="cmmFieldRole" list="cmtRoleList" placeholder="e.g. Treasurer, Member">
+            <datalist id="cmtRoleList"><option value="Member"></option><option value="Secretary"></option><option value="Treasurer"></option><option value="Coordinator"></option><option value="Village In-charge"></option><option value="Mahila Wing"></option></datalist></div>
+          <div class="form-group"><label class="form-label" for="cmmFieldStatus">Status</label><select class="form-select" id="cmmFieldStatus"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+        </div>
+        <div class="form-group"><label class="form-label" for="cmmFieldNotes">Notes</label><textarea class="form-input mg-textarea" id="cmmFieldNotes" rows="2"></textarea></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalCmtMember')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formCmtMember" id="cmtMemberFormSubmitBtn">Add Member</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalMeeting">
+  <div class="modal-box" style="max-width: 720px;">
+    <div class="modal-header">
+      <div><div class="modal-title" id="meetingFormTitle">Schedule Meeting</div>
+        <span class="mg-muted-xs">Committee: <strong id="meetingFormCmt">—</strong></span></div>
+      <button class="modal-close-btn" onclick="closeModal('modalMeeting')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formMeeting" onsubmit="handleSaveMeeting(event)">
+        <div class="form-group"><label class="form-label" for="mtgFieldTitle">Meeting Title *</label>
+          <input type="text" class="form-input" id="mtgFieldTitle" placeholder="e.g. Monthly Governance Meeting" required></div>
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="mtgFieldDate">Date *</label><input type="date" class="form-input" id="mtgFieldDate" required></div>
+          <div class="form-group"><label class="form-label" for="mtgFieldVenue">Venue</label><input type="text" class="form-input" id="mtgFieldVenue" placeholder="e.g. Trust Office, Sanand"></div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="mtgFieldStart">Start *</label><input type="time" class="form-input" id="mtgFieldStart" required></div>
+          <div class="form-group"><label class="form-label" for="mtgFieldEnd">End *</label><input type="time" class="form-input" id="mtgFieldEnd" required></div>
+        </div>
+        <div class="form-group"><label class="form-label">Invite Members *</label><div class="mg-picker" id="mtgMemberPicker"></div></div>
+        <div class="form-group"><label class="form-label" for="mtgFieldAgenda">Agenda</label>
+          <textarea class="form-input mg-textarea" id="mtgFieldAgenda" rows="2" placeholder="Points to discuss"></textarea></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalMeeting')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formMeeting" id="meetingFormSubmitBtn">Schedule Meeting</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalCmtDraft">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="cmtDraftFormTitle">New Draft</div>
+      <button class="modal-close-btn" onclick="closeModal('modalCmtDraft')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formCmtDraft" onsubmit="handleSaveCmtDraft(event)">
+        <div class="form-group"><label class="form-label" for="cmtDraftFieldTitle">Draft Title *</label>
+          <input type="text" class="form-input" id="cmtDraftFieldTitle" placeholder="e.g. Meeting Reminder" required></div>
+        <div class="form-group"><label class="form-label" for="cmtDraftFieldMsg">Message *</label>
+          <textarea class="form-input mg-textarea" id="cmtDraftFieldMsg" rows="7" required placeholder="Jai Mataji 🙏&#10;&#10;..."></textarea></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalCmtDraft')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formCmtDraft">Save Draft</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     EVENTS MODULE MODALS
+     ========================================== -->
+<div class="modal-overlay" id="modalEvent">
+  <div class="modal-box" style="max-width: 720px;">
+    <div class="modal-header">
+      <div class="modal-title" id="eventFormTitle">Add Event</div>
+      <button class="modal-close-btn" onclick="closeModal('modalEvent')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formEvent" onsubmit="handleSaveEvent(event)">
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="evFieldType">Event Type *</label><select class="form-select" id="evFieldType" onchange="onEventTypeChange()"></select></div>
+          <div class="form-group"><label class="form-label" for="evFieldName">Event Name *</label><input type="text" class="form-input" id="evFieldName" placeholder="e.g. Navratri Mahotsav 2026" required></div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="evFieldVenue">Venue</label><input type="text" class="form-input" id="evFieldVenue" placeholder="e.g. Mahotsav Ground"></div>
+          <div class="form-group"><label class="form-label" for="evFieldIncharge">In-charge</label><select class="form-select" id="evFieldIncharge"></select></div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="evFieldFootfall">Expected Footfall</label><input type="number" class="form-input" id="evFieldFootfall" min="0" placeholder="e.g. 3000"></div>
+          <div class="form-group"><label class="form-label" for="evFieldBudget">Budget (₹)</label><input type="number" class="form-input" id="evFieldBudget" min="0" placeholder="e.g. 250000"></div>
+        </div>
+        <div class="form-group">
+          <div class="flex justify-between items-center"><label class="form-label" style="margin:0;">Days (date &amp; time) *</label>
+            <button class="btn btn-outline mg-btn-xs" type="button" onclick="evAddDayRow()">+ Add day</button></div>
+          <div id="evDayRows"></div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="evFieldAccent">Colour</label><select class="form-select" id="evFieldAccent"></select></div>
+          <div class="form-group"></div>
+        </div>
+        <div class="form-group"><label class="form-label" for="evFieldNotes">Notes</label><textarea class="form-input mg-textarea" id="evFieldNotes" rows="2"></textarea></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalEvent')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formEvent" id="eventFormSubmitBtn">Add Event</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalEventType">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="evTypeFormTitle">Add Event Type</div>
+      <button class="modal-close-btn" onclick="closeModal('modalEventType')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formEventType" onsubmit="handleSaveEventType(event)">
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="evTypeFieldName">Type Name *</label><input type="text" class="form-input" id="evTypeFieldName" required></div>
+          <div class="form-group"><label class="form-label" for="evTypeFieldCategory">Category</label><input type="text" class="form-input" id="evTypeFieldCategory" placeholder="e.g. Utsav, Seva, Yatra"></div>
+        </div>
+        <div class="grid mg-2col-form">
+          <div class="form-group"><label class="form-label" for="evTypeFieldIcon">Icon (emoji)</label><input type="text" class="form-input" id="evTypeFieldIcon" maxlength="2" placeholder="📅"></div>
+          <div class="form-group"></div>
+        </div>
+        <div class="form-group"><label class="form-label" for="evTypeFieldDesc">Description</label><input type="text" class="form-input" id="evTypeFieldDesc"></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalEventType')">Cancel</button>
+      <button class="btn btn-primary" type="submit" form="formEventType">Save</button>
     </div>
   </div>
 </div>
@@ -1364,7 +2012,32 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- JavaScript Logic Engine -->
-<script src="app.js"></script>
+<script src="js/i18n.js"></script>
+<script>window.__boot && window.__boot(34, 'Lighting the diyas');</script>
+<script src="js/people.js"></script>
+<script src="js/export.js"></script>
+<script src="js/app.js"></script>
+<script>window.__boot && window.__boot(48);</script>
+<script src="js/management.js"></script>
+<script src="js/management-ui.js"></script>
+<script src="js/management-forms.js"></script>
+<script src="js/pooja.js"></script>
+<script src="js/pooja-ui.js"></script>
+<script src="js/pooja-forms.js"></script>
+<script src="js/donations.js"></script>
+<script src="js/donations-ui.js"></script>
+<script src="js/donations-forms.js"></script>
+<script src="js/committee.js"></script>
+<script src="js/committee-ui.js"></script>
+<script src="js/committee-forms.js"></script>
+<script src="js/events.js"></script>
+<script src="js/events-ui.js"></script>
+<script src="js/events-forms.js"></script>
+<script src="js/visits.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/access.js"></script>
+<script>window.__boot && window.__boot(92, 'Almost ready');</script>
 
 </body>
 </html>

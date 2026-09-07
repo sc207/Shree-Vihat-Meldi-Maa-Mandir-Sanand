@@ -1,0 +1,10 @@
+# Editor / OS cruft
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# Tooling / local notes (not part of the deployed site)
+.claude/
+CLAUDE.md
+node_modules/
