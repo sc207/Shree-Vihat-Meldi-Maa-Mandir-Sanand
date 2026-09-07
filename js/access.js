@@ -102,7 +102,6 @@ function renderAccess() {
     </div>
     <div class="card-body" style="padding:0;">
       <div class="mg-table-scroll"><table class="custom-table acc-table">
-        <colgroup><col style="width:23%"><col style="width:13%"><col style="width:13%"><col style="width:23%"><col style="width:18%"><col style="width:10%"></colgroup>
         <thead><tr><th>${window.t('name')}</th><th>${window.t('mobile')}</th><th>${window.t('city')}</th><th>${window.t('acc_roles', 'Roles')}</th><th>${window.t('acc_can_open', 'Can open')}</th><th>${window.t('actions')}</th></tr></thead>
         <tbody>${accounts.map(a => {
           const pages = accountPages(a.id);
@@ -111,7 +110,7 @@ function renderAccess() {
             <td>${esc(a.mobile || '—')}</td>
             <td>${esc(tData(a.city) || '—')}</td>
             <td>${a.roles.map(r => `<span class="badge badge-maroon">${roleIcon(r)} ${esc(roleLabel(r))}</span>`).join('')}</td>
-            <td class="mg-muted-xs">${pages[0] === '*' ? window.t('acc_everything', 'Everything') : esc(pages.join(', '))}</td>
+            <td class="acc-wrap mg-muted-xs">${pages[0] === '*' ? window.t('acc_everything', 'Everything') : esc(pages.join(', '))}</td>
             <td><button class="btn btn-outline mg-btn-xs" onclick="signInAs('${a.id}')">${window.t('acc_signin', 'Sign in as')}</button></td>
           </tr>`;
         }).join('')}</tbody>
@@ -125,12 +124,11 @@ function renderAccess() {
       ${bar('acc-audit')}
     </div>
     <div class="card-body" style="padding:0;">
-      <div class="mg-table-scroll"><table class="custom-table acc-table">
-        <colgroup><col style="width:14%"><col style="width:64%"><col style="width:22%"></colgroup>
+      <div class="mg-table-scroll"><table class="custom-table acc-table acc-table-sm">
         <thead><tr><th>${window.t('acc_module', 'Module')}</th><th>${window.t('acc_action', 'Action')}</th><th>${window.t('acc_when', 'When')}</th></tr></thead>
         <tbody>${(typeof mergedActivity === 'function' ? mergedActivity(25) : []).map(x => `
           <tr><td><span class="badge badge-maroon">${esc(x.tag)}</span></td>
-          <td>${esc(x.text)}${x.ref ? `<div class="mg-muted-xs">${esc(x.ref)}</div>` : ''}</td>
+          <td class="acc-wrap">${esc(x.text)}${x.ref ? `<div class="mg-muted-xs">${esc(x.ref)}</div>` : ''}</td>
           <td class="mg-muted-xs">${esc(x.when)}</td></tr>`).join('')}</tbody>
       </table></div>
     </div>

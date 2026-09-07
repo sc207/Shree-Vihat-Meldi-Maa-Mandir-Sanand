@@ -22,6 +22,14 @@ const CAL = {
 
 function calToday() { return (typeof MG !== 'undefined' && MG.today) ? MG.today : '2026-09-06'; }
 
+/* ---- localisation: delegate to the shared i18n.js helpers (locDate / locTime
+   / locNum / locMonthYear) so every calendar in the app formats the same way ---- */
+function calD(v) { return (typeof tData === 'function') ? tData(v == null ? '' : v) : (v == null ? '' : v); }
+function calDate(iso) { return (typeof locDate === 'function') ? locDate(iso) : String(iso || ''); }
+function calTime(t) { return (typeof locTime === 'function') ? locTime(t) : String(t || ''); }
+function calNum(n) { return (typeof locNum === 'function') ? locNum(n) : String(n || 0); }
+function calMonthLabel(y, mo) { return (typeof locMonthYear === 'function') ? locMonthYear(y, mo) : (y + '-' + (mo + 1)); }
+
 /** Collect every dated item for the given YYYY-MM. */
 function calEntries(monthKey) {
   const out = [];
@@ -33,7 +41,8 @@ function calEntries(monthKey) {
       if (!inMonth(sn.date)) return;
       out.push({
         date: sn.date, time: sn.startTime, type: 'pooja', color: p.color || '#6B1F2A', scopeId: p.id,
-        title: p.name, sub: (sn.label ? sn.label + ' · ' : '') + (typeof fmtTime === 'function' ? fmtTime(sn.startTime) : sn.startTime) + (sn.venue ? ' · ' + sn.venue : ''),
+        title: calD(p.name),
+        sub: (sn.label ? calD(sn.label) + ' · ' : '') + calTime(sn.startTime) + (sn.venue ? ' · ' + calD(sn.venue) : ''),
         go: () => { if (typeof switchPage === 'function') switchPage('puja'); if (typeof openPooja === 'function') openPooja(p.id); }
       });
     }));
@@ -45,7 +54,8 @@ function calEntries(monthKey) {
       const c = (typeof cmtById === 'function') ? cmtById(m.committeeId) : null;
       out.push({
         date: m.date, time: m.startTime, type: 'committee', color: (c && c.color) || '#3B5C8A', scopeId: m.committeeId,
-        title: m.title, sub: (c ? c.name + ' · ' : '') + (typeof fmtTime === 'function' ? fmtTime(m.startTime) : m.startTime) + (m.venue ? ' · ' + m.venue : ''),
+        title: calD(m.title),
+        sub: (c ? calD(c.name) + ' · ' : '') + calTime(m.startTime) + (m.venue ? ' · ' + calD(m.venue) : ''),
         go: () => { if (typeof switchPage === 'function') switchPage('committees'); if (typeof openCmtMeeting === 'function') openCmtMeeting(m.id); }
       });
     });
@@ -57,7 +67,8 @@ function calEntries(monthKey) {
         if (!inMonth(dy.date)) return;
         out.push({
           date: dy.date, time: dy.startTime || '', type: 'event', color: ev.color || '#C96A20', scopeId: ev.id,
-          title: ev.name, sub: (typeof evTypeName === 'function' ? evTypeName(ev) + ' · ' : '') + (dy.startTime ? (typeof fmtTime === 'function' ? fmtTime(dy.startTime) : dy.startTime) : '') + (ev.venue ? ' · ' + ev.venue : ''),
+          title: calD(ev.name),
+          sub: (typeof evTypeName === 'function' ? calD(evTypeName(ev)) + ' · ' : '') + (dy.startTime ? calTime(dy.startTime) : '') + (ev.venue ? ' · ' + calD(ev.venue) : ''),
           go: () => { if (typeof switchPage === 'function') switchPage('events'); if (typeof openEvent === 'function') openEvent(ev.id); }
         });
       });
@@ -70,8 +81,8 @@ function calEntries(monthKey) {
       const d = (typeof donorById === 'function') ? donorById(x.donorId) : null;
       out.push({
         date: x.date, time: '', type: 'donation', color: '#C9A24A',
-        title: (typeof donorName === 'function' ? donorName(d) : 'Donor') + ' — ₹' + ((typeof donationValue === 'function' ? donationValue(x) : x.amount) || 0).toLocaleString('en-IN'),
-        sub: window.t('cal_pledge', 'Pledged donation') + (x.purpose ? ' · ' + x.purpose : ''),
+        title: calD(typeof donorName === 'function' ? donorName(d) : 'Donor') + ' — ₹ ' + calNum((typeof donationValue === 'function' ? donationValue(x) : x.amount) || 0),
+        sub: window.t('cal_pledge', 'Pledged donation') + (x.purpose ? ' · ' + calD(x.purpose) : ''),
         go: () => { if (typeof switchPage === 'function') switchPage('donations'); }
       });
     });
@@ -82,8 +93,8 @@ function calEntries(monthKey) {
       if (!inMonth(v.date)) return;
       out.push({
         date: v.date, time: v.time || '', type: 'visit', color: '#4C8B5A',
-        title: v.devoteeName + ' — ' + (typeof visitPurposeLabel === 'function' ? visitPurposeLabel(v.purpose) : v.purpose),
-        sub: (v.time ? (typeof fmtTime === 'function' ? fmtTime(v.time) : v.time) + ' · ' : '') + (v.address || v.city || ''),
+        title: calD(v.devoteeName) + ' — ' + (typeof visitPurposeLabel === 'function' ? visitPurposeLabel(v.purpose) : v.purpose),
+        sub: (v.time ? calTime(v.time) + ' · ' : '') + calD(v.address || v.city || ''),
         go: () => { if (typeof switchPage === 'function') switchPage('visits'); }
       });
     });
@@ -164,7 +175,7 @@ function renderUnifiedCalendar() {
     </div>
     <div class="flex gap-2 items-center">
       <button class="btn btn-outline mg-btn-xs" onclick="shiftCalMonth(-1)">← ${window.t('back')}</button>
-      <strong class="mg-cal-label">${MON[mo]} ${y}</strong>
+      <strong class="mg-cal-label">${calMonthLabel(y, mo)}</strong>
       <button class="btn btn-outline mg-btn-xs" onclick="shiftCalMonth(1)">${window.t('cal_next', 'Next')} →</button>
     </div>
   </div>
@@ -186,7 +197,7 @@ function renderUnifiedCalendar() {
         <tbody>${upNext.map(e => {
           const idx = entries.indexOf(e);
           return `<tr>
-            <td>${(typeof fmtDate === 'function') ? fmtDate(e.date) : e.date}</td>
+            <td>${calDate(e.date)}</td>
             <td><strong>${escCal(e.title)}</strong><div class="mg-muted-xs">${escCal(e.sub)}</div></td>
             <td><span class="badge ${CAL_TYPE_META[e.type].badge}">${window.t(CAL_TYPE_META[e.type].key, CAL_TYPE_META[e.type].def)}</span></td>
             <td><button class="btn btn-outline mg-btn-xs" onclick="calGoto(${idx})">${window.t('open')}</button></td>

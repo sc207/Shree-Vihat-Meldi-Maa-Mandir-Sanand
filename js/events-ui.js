@@ -37,7 +37,7 @@ function viewEventsDirectory() {
   <div class="stats-grid">
     ${kpiCard(window.t('ev_kpi_total', 'Total Events'), list.length, window.t('ev_kpi_total_meta', 'On the calendar'), '📅')}
     ${kpiCard(window.t('ev_kpi_upcoming', 'Upcoming'), upcoming, window.t('ev_kpi_upcoming_meta', 'Still to come'), '⏭️')}
-    ${kpiCard(window.t('ev_kpi_footfall', 'Expected Footfall'), footfall.toLocaleString('en-IN'), MONTHS[+monthKey.split('-')[1] - 1] + ' ' + monthKey.split('-')[0], '👥')}
+    ${kpiCard(window.t('ev_kpi_footfall', 'Expected Footfall'), locNum(footfall), locMonthYear(+monthKey.split('-')[0], +monthKey.split('-')[1] - 1), '👥')}
     ${kpiCard(window.t('ev_kpi_types', 'Event Types'), EV.eventTypes.length, window.t('ev_kpi_types_meta', 'Master list'), '📜')}
   </div>
 
@@ -155,8 +155,8 @@ function paneEventSchedule(e) {
     const iso = monthKey + '-' + String(d).padStart(2, '0');
     const has = evDays(e).filter(x => x.date === iso);
     cells += `<div class="mg-cal-cell ${iso === evToday() ? 'mg-cal-today' : ''}">
-      <div class="mg-cal-date">${d}</div>
-      ${has.map(x => `<div class="mg-cal-event" style="--c:${e.color}"><div class="mg-ev-title">${esc(e.name)}</div><div class="mg-ev-meta">${fmtTime(x.startTime)}–${fmtTime(x.endTime)}</div></div>`).join('')}
+      <div class="mg-cal-date">${d}${iso === evToday() ? `<span class="mg-cal-todaytag">${window.t('today', 'Today')}</span>` : ''}</div>
+      ${has.map(x => `<div class="mg-cal-event" style="--c:${e.color}" title="${esc(tData(e.name))}"><div class="mg-ev-title">${esc(tData(e.name))}</div><div class="mg-ev-meta">${locTime(x.startTime)}–${locTime(x.endTime)}${e.venue ? ' · ' + esc(tData(e.venue)) : ''}</div></div>`).join('')}
     </div>`;
   }
   const trail = (7 - ((startDow + daysIn) % 7)) % 7;
@@ -166,12 +166,12 @@ function paneEventSchedule(e) {
     <div><h2 class="mg-pane-title">${window.t('ev_schedule', 'Schedule')}</h2></div>
     <div class="flex gap-2 items-center">
       <button class="btn btn-outline mg-btn-xs" onclick="shiftEvMonth(-1)">←</button>
-      <strong class="mg-cal-label">${MONTHS[mo]} ${y}</strong>
+      <strong class="mg-cal-label">${locMonthYear(y, mo)}</strong>
       <button class="btn btn-outline mg-btn-xs" onclick="shiftEvMonth(1)">→</button>
     </div>
   </div>
   <div class="card"><div class="card-body">
-    <div class="mg-cal-head">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(x => `<div>${x}</div>`).join('')}</div>
+    <div class="mg-cal-head">${locDowShort().map(x => `<div>${x}</div>`).join('')}</div>
     <div class="mg-cal-grid">${cells}</div>
   </div></div>`;
 }
@@ -242,7 +242,7 @@ function printEventNotice(id) {
       <div class="pj-invite-foot">Jai Shri Vihat Meldi Mataji 🙏</div>
     </div>
   </div>`;
-  if (typeof printInvitationHTML === 'function') printInvitationHTML(inner);
+  if (typeof printInvitationHTML === 'function') printInvitationHTML(inner, e.name);
   else if (typeof printDonationHTML === 'function') printDonationHTML(inner, 'don-print-cert');
 }
 

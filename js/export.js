@@ -29,8 +29,14 @@
   /* Absolute URL for a bundled asset — works from the main document AND from
      the about:blank print windows, and under a GitHub Pages sub-path. */
   function assetURL(file) {
-    try { return new URL(file, document.baseURI).href; }
-    catch (e) { return file; }
+    try {
+      var u = new URL(file, document.baseURI).href;
+      if (u) return u;
+    } catch (e) {}
+    try {
+      var base = String(document.baseURI || location.href).replace(/[?#].*$/, '').replace(/[^/]*$/, '');
+      return base + String(file).replace(/^\.?\//, '');
+    } catch (e2) { return file; }
   }
   window.assetURL = assetURL;
 
@@ -38,6 +44,37 @@
     if (typeof window.showToast === 'function') window.showToast(msg);
     else if (typeof window.mgToast === 'function') window.mgToast(msg);
   }
+
+  var FONT_IMPORT = "@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600;700&family=Noto+Serif+Gujarati:wght@400;600;700&family=Noto+Sans+Gujarati:wght@400;600;700&display=swap');";
+
+  /* Open a print / save-as-PDF window that actually carries the app's styles.
+     We LINK css/styles.css (a stylesheet <link> always applies, even on file://
+     — only JS reading of .cssRules is blocked, which is why the old
+     serialise-every-rule approach produced an unstyled page), and we wait for
+     `window.load` (fonts + images ready) before calling print(). */
+  window.openPrintDoc = function (opt) {
+    opt = opt || {};
+    var w = window.open('', '_blank');
+    if (!w) { toast('Please allow pop-ups to print / save as PDF.'); return null; }
+    var href = assetURL('css/styles.css');
+    var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' +
+      xesc(opt.title || 'Temple Document') + '</title>' +
+      '<link rel="stylesheet" href="' + href + '">' +
+      '<style>' + FONT_IMPORT +
+      'html,body{background:#fff;margin:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact}' +
+      'body{font-family:Inter,system-ui,sans-serif}' +
+      '*{-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+      '@media print{html,body{background:#fff}}' +
+      (opt.css || '') + '</style></head><body>' +
+      '<div class="' + (opt.wrapClass || 'tpl-print-wrap') + '">' + (opt.inner || '') + '</div>' +
+      '<' + 'script>(function(){var d=false;function go(){if(d)return;d=true;try{window.focus()}catch(e){}' +
+      'try{window.print()}catch(e){}}' +
+      'if(document.readyState==="complete"){setTimeout(go,400)}' +
+      'else{window.addEventListener("load",function(){setTimeout(go,400)})}' +
+      'setTimeout(go,3000);})();<' + '/script></body></html>';
+    w.document.open(); w.document.write(html); w.document.close();
+    return w;
+  };
 
   function templeInfo() {
     var d = {
@@ -169,7 +206,9 @@
       xesc(String(location.href).split('#')[0]) + '</div>' +
       '<div class="rpt-sign"><span></span>Authorised Signatory / Trustee</div></div>' +
       '</div></div>' +
-      '<' + 'script>setTimeout(function(){window.focus();window.print();},500);<' + '/script>' +
+      '<' + 'script>(function(){var d=false;function go(){if(d)return;d=true;try{window.focus()}catch(e){}try{window.print()}catch(e){}}' +
+      'if(document.readyState==="complete"){setTimeout(go,400)}else{window.addEventListener("load",function(){setTimeout(go,400)})}' +
+      'setTimeout(go,3000);})();<' + '/script>' +
       '</body></html>';
 
     w.document.open(); w.document.write(html); w.document.close();

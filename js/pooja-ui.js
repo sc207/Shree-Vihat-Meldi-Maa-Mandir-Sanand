@@ -666,6 +666,24 @@ function paneSevarthiProfile(p) {
 /* ------------------------------------------------------------
    PANE: INVITATION CARD
    ------------------------------------------------------------ */
+/** Committee options for the invitation audience dropdown (needs the CMT module). */
+function invAudienceOptions() {
+  if (typeof CMT === 'undefined' || !Array.isArray(CMT.committees)) return [];
+  return CMT.committees.map(c => ({
+    id: c.id,
+    label: (typeof tData === 'function' ? tData(c.samaj || c.name) : (c.samaj || c.name)),
+    count: (typeof cmtMembersOf === 'function' ? cmtMembersOf(c.id).length : 0)
+  }));
+}
+/** Recipient rows (name + place) for a chosen audience committee. */
+function invAudienceRecipients(audienceId) {
+  if (!audienceId || typeof cmtMembersOf !== 'function') return [];
+  return cmtMembersOf(audienceId).map(m => ({
+    name: (m.firstName + ' ' + m.lastName).trim(),
+    place: [m.city, m.state].filter(Boolean).map(x => (typeof tData === 'function' ? tData(x) : x)).join(', ')
+  }));
+}
+
 function panePoojaInvitation(p) {
   const inv = p.invitation || {};
   const tplOpts = [
@@ -676,6 +694,8 @@ function panePoojaInvitation(p) {
   const langOpts = [['', window.t('pj_inv_lang_app', 'Same as app')], ['en', 'English'], ['gu', 'ગુજરાતી'], ['hi', 'हिन्दी']];
   const accentOpts = POOJA.accentPalette.map(a =>
     `<option value="${a.hex}" ${a.hex === inv.accent ? 'selected' : ''}>${esc(a.name)}</option>`).join('');
+  const audOpts = invAudienceOptions();
+  const audCount = inv.audience ? invAudienceRecipients(inv.audience).length : 0;
 
   return `
   <div class="flex justify-between items-center mg-pane-head">
@@ -688,6 +708,7 @@ function panePoojaInvitation(p) {
   <div class="pj-invite-controls">
     <div class="pj-invite-stage">
       <div id="pjInvitePreview">${invitationMarkup(p, inv)}</div>
+      <div id="pjInviteBatchNote" class="pj-invite-batch-note"${audCount ? '' : ' hidden'}>${audCount ? (window.t('pj_inv_aud_preview', 'Preview shows 1 of') + ' ' + audCount + ' — ' + window.t('pj_inv_aud_pdf', 'Print / Save PDF generates all') + ' ' + audCount) : ''}</div>
     </div>
 
     <div class="card">
@@ -706,6 +727,16 @@ function panePoojaInvitation(p) {
                 ${langOpts.map(o => `<option value="${o[0]}" ${o[0] === (inv.lang || '') ? 'selected' : ''}>${o[1]}</option>`).join('')}
               </select>
             </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="invAudience">${window.t('pj_inv_audience', 'Invite (audience)')}</label>
+            <select class="form-select" id="invAudience" onchange="updateInvitationPreview()">
+              <option value="">${window.t('pj_inv_aud_open', 'Open / public invitation (no name)')}</option>
+              ${audOpts.length ? `<optgroup label="${window.t('pj_inv_aud_grp', 'One card per committee member')}">
+                ${audOpts.map(o => `<option value="${o.id}" ${o.id === (inv.audience || '') ? 'selected' : ''}>${esc(o.label)} — ${o.count} ${window.t('cmt_members', 'members')}</option>`).join('')}
+              </optgroup>` : ''}
+            </select>
+            <span class="mg-muted-xs">${window.t('pj_inv_aud_hint', 'Pick a samaj / committee to generate a personalised card (name, city, state) for every member — one page each in the PDF.')}</span>
           </div>
           <div class="form-group">
             <label class="form-label" for="invAccent">${window.t('pj_inv_accent', 'Accent Colour')}</label>
@@ -747,6 +778,7 @@ function readInvitationOpts(p) {
     template: g('invTemplate').value,
     accent: g('invAccent').value,
     lang: g('invLangSel') ? g('invLangSel').value : (p.invitation && p.invitation.lang) || '',
+    audience: g('invAudience') ? g('invAudience').value : (p.invitation && p.invitation.audience) || '',
     headline: g('invHeadline').value,
     inviteLine: g('invLine').value,
     blessing: g('invBlessing').value,
@@ -760,7 +792,17 @@ function updateInvitationPreview() {
   const p = poojaById(POOJA.activePoojaId);
   const box = document.getElementById('pjInvitePreview');
   if (!p || !box) return;
-  box.innerHTML = invitationMarkup(p, readInvitationOpts(p));
+  const opts = readInvitationOpts(p);
+  const rcpts = invAudienceRecipients(opts.audience);
+  if (rcpts.length) opts.recipient = rcpts[0];      // preview the first member
+  box.innerHTML = invitationMarkup(p, opts);
+  const note = document.getElementById('pjInviteBatchNote');
+  if (note) {
+    note.hidden = !rcpts.length;
+    if (rcpts.length) note.textContent =
+      window.t('pj_inv_aud_preview', 'Preview shows 1 of') + ' ' + rcpts.length + ' — ' +
+      window.t('pj_inv_aud_pdf', 'Print / Save PDF generates all') + ' ' + rcpts.length;
+  }
 }
 
 function saveInvitation(e, id) {
@@ -777,10 +819,13 @@ function previewInvitation(id) {
   const p = poojaById(id);
   if (!p) return;
   const opts = readInvitationOpts(p);
+  const rcpts = invAudienceRecipients(opts && opts.audience);
+  if (rcpts.length) opts.recipient = rcpts[0];
+  const note = rcpts.length ? `<div class="pj-invite-batch-note">${rcpts.length} ${window.t('cmt_members', 'members')} — Print / Save PDF generates all ${rcpts.length}</div>` : '';
   openSheet({
     title: `Invitation — ${p.name}`,
     wide: true,
-    body: `<div class="pj-invite-single">${invitationMarkup(p, opts)}</div>`,
+    body: `<div class="pj-invite-single">${invitationMarkup(p, opts)}</div>${note}`,
     footer: `<button class="btn btn-outline" onclick="closeSheet()">Close</button>
              <button class="btn btn-primary" onclick="printInvitationFor('${id}')">Print / Save PDF</button>`
   });
@@ -790,7 +835,18 @@ function printInvitationFor(id) {
   const p = poojaById(id);
   if (!p) return;
   const opts = (POOJA.activePoojaId === id) ? readInvitationOpts(p) : Object.assign({}, p.invitation);
-  printInvitationHTML(invitationMarkup(p, opts));
+  const rcpts = invAudienceRecipients(opts && opts.audience);
+  let cards, title = p.name;
+  if (rcpts.length) {
+    const cmt = (typeof cmtById === 'function') ? cmtById(opts.audience) : null;
+    const cmtName = cmt ? (cmt.name || cmt.samaj || 'Committee') : 'Committee';
+    title = p.name + ' - ' + cmtName;
+    cards = rcpts.map(r => invitationMarkup(p, Object.assign({}, opts, { recipient: r })));
+    if (typeof pjToast === 'function') pjToast(rcpts.length + ' invitation cards prepared — ' + cmtName + '.');
+  } else {
+    cards = [invitationMarkup(p, opts)];
+  }
+  printInvitationHTML(cards, title);
 }
 
 /* ---- Invitation markup + SVG motifs ----
@@ -799,16 +855,16 @@ function printInvitationFor(id) {
 const INV_TXT = {
   en: { invite:'You are cordially invited to', blessing:'Your presence will be our blessing.',
         foot:'Jai Shri Vihat Meldi Mataji 🙏', ribbon:'~  Invitation  ~', programme:'Programme',
-        presence:'In the gracious presence of', sevaby:'Seva by the Sevarthi Parivar',
-        ldate:'Date', ltime:'Time', lvenue:'Venue', tba:'To be announced', atmandir:'At the Mandir', session:'Session' },
+        presence:'In the gracious presence of', sevaby:'Seva by the Sevarthi Parivar', invitee:'To',
+        withfamily:'and family', ldate:'Date', ltime:'Time', lvenue:'Venue', tba:'To be announced', atmandir:'At the Mandir', session:'Session' },
   hi: { invite:'आप सादर आमंत्रित हैं', blessing:'आपकी उपस्थिति ही हमारा आशीर्वाद है।',
         foot:'जय श्री विहत मेलडी माताजी 🙏', ribbon:'॥  आमंत्रण  ॥', programme:'कार्यक्रम',
-        presence:'गरिमामयी उपस्थिति में', sevaby:'सेवार्थी परिवार द्वारा सेवा',
-        ldate:'तिथि', ltime:'समय', lvenue:'स्थान', tba:'शीघ्र घोषित', atmandir:'मंदिर में', session:'सत्र' },
+        presence:'गरिमामयी उपस्थिति में', sevaby:'सेवार्थी परिवार द्वारा सेवा', invitee:'सेवा में',
+        withfamily:'सपरिवार', ldate:'तिथि', ltime:'समय', lvenue:'स्थान', tba:'शीघ्र घोषित', atmandir:'मंदिर में', session:'सत्र' },
   gu: { invite:'આપ સૌને સાદર આમંત્રણ છે', blessing:'આપની ઉપસ્થિતિ એ જ અમારો આશીર્વાદ.',
         foot:'જય શ્રી વિહત મેલડી માતાજી 🙏', ribbon:'॥  સાદર આમંત્રણ  ॥', programme:'કાર્યક્રમ',
-        presence:'મુખ્ય અતિથિ વિશેષ ઉપસ્થિતિમાં', sevaby:'સેવાર્થી પરિવાર દ્વારા સેવા',
-        ldate:'તારીખ', ltime:'સમય', lvenue:'સ્થળ', tba:'ટૂંક સમયમાં જાહેર', atmandir:'મંદિરે', session:'સત્ર' }
+        presence:'મુખ્ય અતિથિ વિશેષ ઉપસ્થિતિમાં', sevaby:'સેવાર્થી પરિવાર દ્વારા સેવા', invitee:'પ્રતિ',
+        withfamily:'સપરિવાર', ldate:'તારીખ', ltime:'સમય', lvenue:'સ્થળ', tba:'ટૂંક સમયમાં જાહેર', atmandir:'મંદિરે', session:'સત્ર' }
 };
 function invLang(opts) {
   const l = (opts && opts.lang) || (typeof currentLang === 'function' ? currentLang() : 'en');
@@ -881,6 +937,11 @@ function invitationMarkup(p, opts) {
       <div class="pj-invite-temple-sub">${esc(window.t('temple_loc', 'Sanand, Gujarat'))}</div>
       <div class="pj-invite-ribbon">${esc(ivt(L, 'ribbon'))}</div>
       <div class="pj-invite-invocation">${esc(opts.inviteLine || ivt(L, 'invite'))}</div>
+      ${opts.recipient ? `<div class="pj-invite-recipient">
+        <span class="pj-invite-recipient-l">${esc(ivt(L, 'invitee'))}</span>
+        <strong>${esc(opts.recipient.name)} <em>${esc(ivt(L, 'withfamily'))}</em></strong>
+        ${opts.recipient.place ? `<span class="pj-invite-recipient-p">${esc(opts.recipient.place)}</span>` : ''}
+      </div>` : ''}
       <h1 class="pj-invite-headline">${esc(opts.headline || p.name)}</h1>
       ${ty ? `<div class="pj-invite-type">${esc(ty.name)}</div>` : ''}
       ${detailBlock}
@@ -901,23 +962,42 @@ function invitationMarkup(p, opts) {
 }
 
 /** Open a print window carrying the app CSS + fonts so the A5 output is faithful. */
-function printInvitationHTML(inner) {
-  const w = window.open('', '_blank');
-  if (!w) { pjToast('Please allow pop-ups to print the invitation.'); return; }
-  const css = Array.from(document.styleSheets)
-    .map(ss => { try { return Array.from(ss.cssRules).map(r => r.cssText).join('\n'); } catch (e) { return ''; } })
-    .join('\n');
-  w.document.write(`<!DOCTYPE html><html><head><title>Invitation Card</title>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600;700&family=Noto+Serif+Gujarati:wght@400;600;700&family=Noto+Sans+Gujarati:wght@400;600;700&display=swap');
-      ${css}
-      body{background:#fff;margin:0;font-family:Inter,sans-serif}
-      .pj-invite-print{display:flex;flex-wrap:wrap;justify-content:center;gap:0}
-      @media print{ @page{ size:A5; margin:0 } .pj-invite{ width:148mm;min-height:210mm;border-radius:0;box-shadow:none;page-break-after:always } .pj-invite-frame{margin:8mm} }
-    </style></head>
-    <body><div class="pj-invite-print">${inner}</div>
-    <script>setTimeout(function(){window.print();},450);<\/script></body></html>`);
-  w.document.close();
+function printInvitationHTML(cards, title) {
+  if (typeof openPrintDoc !== 'function') { pjToast('Print service unavailable.'); return; }
+  const arr = Array.isArray(cards) ? cards : [cards];
+  // Each card gets its own plain BLOCK wrapper (.inv-page) — page-break-after
+  // is reliably honoured on a block-flow element (it is ignored on flex items,
+  // which is why cards were running together).
+  const inner = arr.map((c, i) =>
+    `<div class="inv-page">${arr.length > 1 ? `<span class="inv-page-n">${i + 1} / ${arr.length}</span>` : ''}${c}</div>`
+  ).join('');
+  openPrintDoc({
+    title: (title || 'Invitation').replace(/[\/\\:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim() || 'Invitation',
+    wrapClass: 'pj-invite-print',
+    inner: inner,
+    css:
+      /* on-screen popup: each card is a distinct sheet, stacked */
+      '.pj-invite-print{display:block;background:#efe7d7;padding:20px 0}' +
+      '.inv-page{display:block;position:relative;width:402px;max-width:92vw;margin:0 auto 26px}' +
+      '.inv-page .pj-invite{box-shadow:0 16px 44px rgba(107,31,42,.28)}' +
+      '.inv-page-n{position:absolute;top:-15px;left:50%;transform:translateX(-50%);z-index:6;' +
+        'font:600 11px/1 Inter,system-ui,sans-serif;letter-spacing:1px;color:#8a7a5c;background:#efe7d7;padding:2px 10px;border-radius:10px}' +
+      /* print / PDF: exactly one A5 page per card */
+      '@media print{' +
+        '@page{size:A5 portrait;margin:0}' +
+        'html,body{background:#fff}' +
+        '.pj-invite-print{padding:0;background:#fff}' +
+        '.inv-page{width:auto;max-width:none;margin:0;' +
+          'break-after:page;page-break-after:always;break-inside:avoid;page-break-inside:avoid}' +
+        '.inv-page:last-child{break-after:auto;page-break-after:auto}' +
+        '.inv-page-n{display:none}' +
+        '.pj-invite{width:148mm !important;height:210mm !important;min-height:0 !important;' +
+          'margin:0 !important;border:0 !important;border-radius:0 !important;box-shadow:none !important;' +
+          'page-break-after:auto !important;break-after:auto !important;' +
+          'overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+        '.pj-invite-frame{margin:8mm !important;min-height:0 !important}' +
+      '}'
+  });
 }
 
 /* ------------------------------------------------------------
@@ -948,12 +1028,12 @@ function panePoojaCalendar(p) {
     const isToday = iso === pjToday();
     cells += `
       <div class="mg-cal-cell ${isToday ? 'mg-cal-today' : ''}">
-        <div class="mg-cal-date">${d}${isToday ? '<span class="mg-cal-todaytag">Today</span>' : ''}</div>
+        <div class="mg-cal-date">${d}${isToday ? `<span class="mg-cal-todaytag">${window.t('today', 'Today')}</span>` : ''}</div>
         ${dayE.map(x => `
-          <div class="mg-cal-event" style="--c:${x.pooja.color}" onclick="openPooja('${x.pooja.id}')" title="${esc(x.pooja.name)}">
-            <div class="mg-ev-title">${esc(x.pooja.name)}</div>
-            <div class="mg-ev-meta">${esc(x.session.label || '')}</div>
-            <div class="mg-ev-meta">${fmtTime(x.session.startTime)}–${fmtTime(x.session.endTime)}</div>
+          <div class="mg-cal-event" style="--c:${x.pooja.color}" onclick="openPooja('${x.pooja.id}')" title="${esc(tData(x.pooja.name))}">
+            <div class="mg-ev-title">${esc(tData(x.pooja.name))}</div>
+            <div class="mg-ev-meta">${esc(tData(x.session.label || ''))}</div>
+            <div class="mg-ev-meta">${locTime(x.session.startTime)}–${locTime(x.session.endTime)}</div>
           </div>`).join('')}
       </div>`;
   }
@@ -964,34 +1044,34 @@ function panePoojaCalendar(p) {
   <div class="flex justify-between items-center mg-pane-head">
     <div>
       <h2 class="mg-pane-title">${window.t('pj_calendar')}</h2>
-      <p class="mg-page-sub">${entries.length} session(s) in ${MONTHS[mo]} ${yr} across ${isPoojaAdmin() ? 'all poojas' : 'your poojas'}</p>
+      <p class="mg-page-sub">${entries.length} session(s) in ${locMonthYear(yr, mo)} across ${isPoojaAdmin() ? 'all poojas' : 'your poojas'}</p>
     </div>
     <div class="flex gap-2 items-center">
       <button class="btn btn-outline mg-btn-xs" onclick="shiftPoojaMonth(-1)">← Prev</button>
-      <strong class="mg-cal-label">${MONTHS[mo]} ${yr}</strong>
+      <strong class="mg-cal-label">${locMonthYear(yr, mo)}</strong>
       <button class="btn btn-outline mg-btn-xs" onclick="shiftPoojaMonth(1)">Next →</button>
     </div>
   </div>
 
   <div class="card">
     <div class="card-body">
-      <div class="mg-cal-head">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(x => `<div>${x}</div>`).join('')}</div>
+      <div class="mg-cal-head">${locDowShort().map(x => `<div>${x}</div>`).join('')}</div>
       <div class="mg-cal-grid">${cells}</div>
     </div>
   </div>
 
   <div class="card mg-mt">
-    <div class="card-header"><div class="card-title">All Sessions — ${MONTHS[mo]} ${yr}</div></div>
+    <div class="card-header"><div class="card-title">All Sessions — ${locMonthYear(yr, mo)}</div></div>
     <div class="card-body" style="padding:0;">
       ${entries.length ? `<div class="mg-table-scroll"><table class="custom-table">
         <thead><tr><th>Date</th><th>Pooja</th><th>Session</th><th>Time</th><th>Venue</th><th>Action</th></tr></thead>
         <tbody>${entries.slice().sort((a, b) => (a.session.date + a.session.startTime).localeCompare(b.session.date + b.session.startTime)).map(x => `
           <tr>
-            <td>${fmtDate(x.session.date)}</td>
-            <td><strong>${esc(x.pooja.name)}</strong></td>
-            <td>${esc(x.session.label || '—')}</td>
-            <td>${fmtTime(x.session.startTime)} – ${fmtTime(x.session.endTime)}</td>
-            <td>${esc(x.session.venue || x.pooja.defaultVenue || '—')}</td>
+            <td>${locDate(x.session.date)}</td>
+            <td><strong>${esc(tData(x.pooja.name))}</strong></td>
+            <td>${esc(tData(x.session.label || '—'))}</td>
+            <td>${locTime(x.session.startTime)} – ${locTime(x.session.endTime)}</td>
+            <td>${esc(tData(x.session.venue || x.pooja.defaultVenue || '—'))}</td>
             <td><button class="btn btn-outline mg-btn-xs" onclick="openPooja('${x.pooja.id}')">Open</button></td>
           </tr>`).join('')}</tbody>
       </table></div>` : `<div class="mg-pad-note">No pooja sessions this month.</div>`}

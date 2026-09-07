@@ -412,26 +412,25 @@ function printCurrentDonationDoc() {
 }
 
 function printDonationHTML(inner, sizeClass) {
-  const w = window.open('', '_blank');
-  if (!w) { donToast('Please allow pop-ups to print.'); return; }
-  const css = Array.from(document.styleSheets)
-    .map(ss => { try { return Array.from(ss.cssRules).map(r => r.cssText).join('\n'); } catch (e) { return ''; } })
-    .join('\n');
-  w.document.write(`<!DOCTYPE html><html><head><title>Temple Document</title>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;600;700&family=Noto+Serif+Gujarati:wght@400;600;700&display=swap');
-      ${css}
-      body{background:#fff;margin:0;font-family:Inter,sans-serif}
-      .don-print-wrap{display:flex;justify-content:center;padding:0}
-      @media print{
-        @page{ size:A4; margin:0 }
-        .don-print-wrap.don-print-cert .don-doc{ width:297mm;height:210mm;box-shadow:none;border-radius:0 }
-        .don-print-wrap.don-print-receipt .don-doc{ width:210mm;min-height:148mm;box-shadow:none;border-radius:0 }
-      }
-    </style></head>
-    <body><div class="don-print-wrap ${sizeClass}">${inner}</div>
-    <script>setTimeout(function(){window.print();},450);<\/script></body></html>`);
-  w.document.close();
+  if (typeof openPrintDoc !== 'function') { donToast('Print service unavailable.'); return; }
+  const isCert = /cert/.test(sizeClass || '');
+  openPrintDoc({
+    title: 'Temple Document',
+    wrapClass: 'don-print-wrap ' + (sizeClass || ''),
+    inner: inner,
+    css:
+      '.don-print-wrap{display:flex;justify-content:center;padding:16px;background:#f2ece0}' +
+      '@media print{' +
+        '@page{size:' + (isCert ? '297mm 210mm' : '210mm 297mm') + ';margin:0}' +
+        'body{background:#fff}' +
+        '.don-print-wrap{display:block;padding:0;background:#fff}' +
+        '.don-doc{margin:0 auto !important;box-shadow:none !important;border-radius:0 !important;' +
+          'break-inside:avoid;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+        (isCert
+          ? '.don-doc.don-cert{width:297mm !important;height:210mm !important;aspect-ratio:auto !important}'
+          : '.don-doc.don-receipt{width:210mm !important;min-height:auto !important}') +
+      '}'
+  });
 }
 
 function donationsExport() {

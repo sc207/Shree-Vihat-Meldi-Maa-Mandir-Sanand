@@ -100,8 +100,7 @@ function renderVisits() {
     </div>
     <div class="card-body" style="padding:0;">
       <div class="mg-table-scroll">
-        <table class="custom-table acc-table">
-          <colgroup><col style="width:16%"><col style="width:14%"><col style="width:24%"><col style="width:14%"><col style="width:14%"><col style="width:9%"><col style="width:9%"></colgroup>
+        <table class="custom-table" style="min-width:900px;">
           <thead><tr>
             <th>${window.t('vis_devotee', 'Devotee')}</th><th>${window.t('vis_purpose', 'Purpose')}</th>
             <th>${window.t('vis_address', 'Address')}</th><th>${window.t('vis_datetime', 'Date & Time')}</th>

@@ -9,6 +9,17 @@
    No management type is hard-coded. All behaviour is generic.
    ============================================================ */
 
+/* Fallback stubs if i18n.js somehow isn't loaded (legacy harnesses) */
+if (typeof window !== 'undefined') {
+  if (typeof window.t !== 'function') window.t = function (k, f) { return f != null ? f : k; };
+  if (typeof window.tData !== 'function') window.tData = function (v) { return v == null ? '' : v; };
+  if (typeof window.locMonthYear !== 'function') window.locMonthYear = function (y, mo) { return (y || '') + '-' + ((mo || 0) + 1); };
+  if (typeof window.locDate !== 'function') window.locDate = function (v) { return String(v || ''); };
+  if (typeof window.locTime !== 'function') window.locTime = function (v) { return String(v || ''); };
+  if (typeof window.locNum !== 'function') window.locNum = function (n) { return String(n || 0); };
+  if (typeof window.locDowShort !== 'function') window.locDowShort = function () { return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']; };
+}
+
 /* ------------------------------------------------------------
    1. MASTER DATA STORE
    ------------------------------------------------------------ */

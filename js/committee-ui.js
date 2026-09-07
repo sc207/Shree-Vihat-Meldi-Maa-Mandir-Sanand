@@ -112,7 +112,7 @@ function viewCmtDirectory() {
   <div class="stats-grid">
     ${kpiCard(window.t('cmt_kpi_total', 'Committees'), list.length, admin ? window.t('cmt_kpi_total_meta', 'Across the platform') : '', '🏛️')}
     ${kpiCard(window.t('cmt_kpi_members', 'Members'), totalMembers, window.t('cmt_kpi_members_meta', 'Registered across committees'), '👥')}
-    ${kpiCard(window.t('cmt_kpi_meetings', 'Meetings This Month'), monthMeetings, MONTHS[+monthKey.split('-')[1] - 1] + ' ' + monthKey.split('-')[0], '🗓️')}
+    ${kpiCard(window.t('cmt_kpi_meetings', 'Meetings This Month'), monthMeetings, locMonthYear(+monthKey.split('-')[0], +monthKey.split('-')[1] - 1), '🗓️')}
     ${kpiCard(window.t('cmt_kpi_attendance', 'Avg Attendance'), avg + '%', window.t('cmt_kpi_attendance_meta', 'This month'), '✅')}
   </div>
 
@@ -422,23 +422,23 @@ function paneCmtCalendar(c) {
     const dayM = meets.filter(x => x.date === iso);
     cells += `<div class="mg-cal-cell ${iso === cmtToday() ? 'mg-cal-today' : ''}">
       <div class="mg-cal-date">${d}${iso === cmtToday() ? `<span class="mg-cal-todaytag">${window.t('today')}</span>` : ''}</div>
-      ${dayM.map(x => `<div class="mg-cal-event" style="--c:${c.color}" onclick="openCmtMeeting('${x.id}')" title="${esc(x.title)}">
-        <div class="mg-ev-title">${esc(x.title)}</div><div class="mg-ev-meta">${fmtTime(x.startTime)}–${fmtTime(x.endTime)}</div></div>`).join('')}
+      ${dayM.map(x => `<div class="mg-cal-event" style="--c:${c.color}" onclick="openCmtMeeting('${x.id}')" title="${esc(tData(x.title))}">
+        <div class="mg-ev-title">${esc(tData(x.title))}</div><div class="mg-ev-meta">${locTime(x.startTime)}–${locTime(x.endTime)}${x.venue ? ' · ' + esc(tData(x.venue)) : ''}</div></div>`).join('')}
     </div>`;
   }
   const trail = (7 - ((startDow + daysIn) % 7)) % 7;
   for (let i = 0; i < trail; i++) cells += `<div class="mg-cal-cell mg-cal-empty"></div>`;
   return `
   <div class="flex justify-between items-center mg-pane-head">
-    <div><h2 class="mg-pane-title">${window.t('cmt_calendar', 'Meeting Calendar')}</h2><p class="mg-page-sub">${meets.length} ${window.t('cmt_meetings_word', 'meetings').toLowerCase()} · ${MONTHS[mo]} ${yr}</p></div>
+    <div><h2 class="mg-pane-title">${window.t('cmt_calendar', 'Meeting Calendar')}</h2><p class="mg-page-sub">${meets.length} ${window.t('cmt_meetings_word', 'meetings').toLowerCase()} · ${locMonthYear(yr, mo)}</p></div>
     <div class="flex gap-2 items-center">
       <button class="btn btn-outline mg-btn-xs" onclick="shiftCmtMonth(-1)">←</button>
-      <strong class="mg-cal-label">${MONTHS[mo]} ${yr}</strong>
+      <strong class="mg-cal-label">${locMonthYear(yr, mo)}</strong>
       <button class="btn btn-outline mg-btn-xs" onclick="shiftCmtMonth(1)">→</button>
     </div>
   </div>
   <div class="card"><div class="card-body">
-    <div class="mg-cal-head">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(x => `<div>${x}</div>`).join('')}</div>
+    <div class="mg-cal-head">${locDowShort().map(x => `<div>${x}</div>`).join('')}</div>
     <div class="mg-cal-grid">${cells}</div>
   </div></div>`;
 }

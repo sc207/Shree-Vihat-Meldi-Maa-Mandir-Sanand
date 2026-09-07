@@ -162,7 +162,7 @@ function viewDirectory() {
   <div class="stats-grid">
     ${kpiCard('Total Managements', list.length, isAdmin() ? 'Across the platform' : 'Assigned to you', '🗂️')}
     ${kpiCard('Team Members', totalMembers, `${totalActive} active`, '👥')}
-    ${kpiCard('Sessions This Month', monthSessions, MONTHS[MG.calendarMonth] + ' ' + MG.calendarYear, '📅')}
+    ${kpiCard('Sessions This Month', monthSessions, locMonthYear(MG.calendarYear, MG.calendarMonth), '📅')}
     ${kpiCard('Average Attendance', avgRate + '%', 'Across visible teams', '✅')}
   </div>
 
@@ -655,7 +655,7 @@ function paneMemberProfile(m) {
     </div>
 
     <div class="card">
-      <div class="card-header"><div class="card-title">${MONTHS[MG.calendarMonth]} ${MG.calendarYear} Summary</div></div>
+      <div class="card-header"><div class="card-title">${locMonthYear(MG.calendarYear, MG.calendarMonth)} Summary</div></div>
       <div class="card-body">
         <div class="summary-list">
           <div class="summary-item"><div><strong>Sessions Assigned</strong></div><strong>${month.sessions}</strong></div>
@@ -698,14 +698,14 @@ function paneCalendar(m) {
     const isToday = iso === MG.today;
     cells += `
       <div class="mg-cal-cell ${isToday ? 'mg-cal-today' : ''}">
-        <div class="mg-cal-date">${d}${isToday ? '<span class="mg-cal-todaytag">Today</span>' : ''}</div>
+        <div class="mg-cal-date">${d}${isToday ? `<span class="mg-cal-todaytag">${window.t('today', 'Today')}</span>` : ''}</div>
         ${dayS.map(v => {
           const s = sessionStatus(v);
           const t = sessionTally(v);
           return `
-          <div class="mg-cal-event mg-ev-${s}" style="--c:${m.color}" onclick="openSession('${v.id}')" title="${esc(v.title)}">
-            <div class="mg-ev-title">${esc(v.title)}</div>
-            <div class="mg-ev-meta">${fmtTime(v.startTime)}–${fmtTime(v.endTime)}</div>
+          <div class="mg-cal-event mg-ev-${s}" style="--c:${m.color}" onclick="openSession('${v.id}')" title="${esc(tData(v.title))}">
+            <div class="mg-ev-title">${esc(tData(v.title))}</div>
+            <div class="mg-ev-meta">${locTime(v.startTime)}–${locTime(v.endTime)}</div>
             <div class="mg-ev-meta">👥 ${t.total} · ${STATUS_DOT[s]} ${STATUS_LABEL[s]}</div>
             ${(s !== 'scheduled') ? `<div class="mg-ev-meta">🟢 ${t.present} · 🔴 ${t.absent}</div>` : ''}
           </div>`;
@@ -721,11 +721,11 @@ function paneCalendar(m) {
   <div class="flex justify-between items-center mg-pane-head">
     <div>
       <h2 class="mg-pane-title">Volunteering Calendar</h2>
-      <p class="mg-page-sub">${sessions.length} session(s) in ${MONTHS[mo]} ${yr}</p>
+      <p class="mg-page-sub">${sessions.length} session(s) in ${locMonthYear(yr, mo)}</p>
     </div>
     <div class="flex gap-2 items-center">
       <button class="btn btn-outline mg-btn-xs" onclick="shiftMonth(-1)">← Prev</button>
-      <strong class="mg-cal-label">${MONTHS[mo]} ${yr}</strong>
+      <strong class="mg-cal-label">${locMonthYear(yr, mo)}</strong>
       <button class="btn btn-outline mg-btn-xs" onclick="shiftMonth(1)">Next →</button>
       <button class="btn btn-primary" onclick="openScheduleSession('${m.id}')">+ Schedule Volunteering</button>
     </div>
@@ -733,30 +733,30 @@ function paneCalendar(m) {
 
   <div class="mg-legend">
     <span>🟡 Scheduled</span><span>🟢 Running</span><span>🔵 Completed</span>
-    <span class="mg-legend-color"><i style="background:${m.color}"></i> ${esc(m.name)}</span>
+    <span class="mg-legend-color"><i style="background:${m.color}"></i> ${esc(tData(m.name))}</span>
   </div>
 
   <div class="card">
     <div class="card-body">
       <div class="mg-cal-head">
-        ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => `<div>${d}</div>`).join('')}
+        ${locDowShort().map(d => `<div>${d}</div>`).join('')}
       </div>
       <div class="mg-cal-grid">${cells}</div>
     </div>
   </div>
 
   <div class="card mg-mt">
-    <div class="card-header"><div class="card-title">All Sessions — ${MONTHS[mo]} ${yr}</div></div>
+    <div class="card-header"><div class="card-title">All Sessions — ${locMonthYear(yr, mo)}</div></div>
     <div class="card-body" style="padding:0;">
       ${sessions.length ? `<div class="mg-table-scroll"><table class="custom-table">
         <thead><tr><th>Session</th><th>Date</th><th>Time</th><th>Location</th><th>Assigned</th><th>Present</th><th>Absent</th><th>Status</th><th>Action</th></tr></thead>
         <tbody>${sessions.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(v => {
           const s = sessionStatus(v); const t = sessionTally(v);
           return `<tr>
-            <td><strong>${esc(v.title)}</strong></td>
-            <td>${fmtDate(v.date)}</td>
-            <td>${fmtTime(v.startTime)} – ${fmtTime(v.endTime)}</td>
-            <td>${esc(v.location || '—')}</td>
+            <td><strong>${esc(tData(v.title))}</strong></td>
+            <td>${locDate(v.date)}</td>
+            <td>${locTime(v.startTime)} – ${locTime(v.endTime)}</td>
+            <td>${esc(tData(v.location || '—'))}</td>
             <td>${t.total}</td>
             <td>${t.present}</td>
             <td>${t.absent}</td>
@@ -942,7 +942,7 @@ function paneAttendance(m) {
 
   const monthOptions = ['2026-07','2026-08','2026-09','2026-10'].map(k => {
     const [y,mo] = k.split('-');
-    return `<option value="${k}" ${k === monthKey ? 'selected' : ''}>${MONTHS[+mo-1]} ${y}</option>`;
+    return `<option value="${k}" ${k === monthKey ? 'selected' : ''}>${locMonthYear(+y, +mo - 1)}</option>`;
   }).join('');
 
   return `
@@ -958,7 +958,7 @@ function paneAttendance(m) {
   </div>
 
   <div class="stats-grid">
-    ${kpiCard('Total Sessions', st.sessions, MONTHS[+monthKey.split('-')[1]-1] + ' ' + monthKey.split('-')[0], '📅')}
+    ${kpiCard('Total Sessions', st.sessions, locMonthYear(+monthKey.split('-')[0], +monthKey.split('-')[1] - 1), '📅')}
     ${kpiCard('Volunteer Slots', st.slots, 'Assigned across sessions', '🎟️')}
     ${kpiCard('Present', st.present, `${st.absent} absent`, '🟢')}
     ${kpiCard('Attendance Rate', st.rate + '%', 'Of marked slots', '📊')}
@@ -1128,7 +1128,7 @@ function panePublic(m) {
       <span class="mg-muted-xs">${pending} pending review</span>
     </div>
     <div class="card-body" style="padding:0;">
-      ${signups.length ? `<div class="mg-table-scroll"><table class="custom-table">
+      ${signups.length ? `<div class="mg-table-scroll"><table class="custom-table" style="min-width:880px;">
         <thead><tr><th>Name</th><th>Mobile</th><th>City</th><th>Slot</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead>
         <tbody>${signups.map(s => {
           const v = sessionById(s.volunteeringId);
@@ -1415,22 +1415,20 @@ function generateSelectedBadges(mgmtId) {
 
 /** Open a print window carrying the badge CSS + fonts so output is faithful. */
 function printBadgeHTML(inner) {
-  const w = window.open('', '_blank');
-  if (!w) { mgToast('Please allow pop-ups to print badges.'); return; }
-  const css = Array.from(document.styleSheets)
-    .map(ss => { try { return Array.from(ss.cssRules).map(r => r.cssText).join('\n'); } catch (e) { return ''; } })
-    .join('\n');
-  w.document.write(`<!DOCTYPE html><html><head><title>Team Badges</title>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;600;700&family=Noto+Serif+Gujarati:wght@400;600;700&display=swap');
-      ${css}
-      body{background:#fff;margin:0;padding:14mm;font-family:Inter,sans-serif}
-      .mg-badge-print{display:flex;flex-wrap:wrap;gap:12mm}
-      @media print{ @page{ margin:10mm } .mg-badge{ break-inside:avoid } }
-    </style></head>
-    <body><div class="mg-badge-print">${inner}</div>
-    <script>setTimeout(function(){window.print();},400);<\/script></body></html>`);
-  w.document.close();
+  if (typeof openPrintDoc !== 'function') { mgToast('Print service unavailable.'); return; }
+  openPrintDoc({
+    title: 'Team Badges',
+    wrapClass: 'mg-badge-print',
+    inner: inner,
+    css: '.mg-badge-print{display:flex;flex-wrap:wrap;gap:12mm;justify-content:center;padding:14mm;background:#f2ece0}' +
+      '@media print{' +
+        '@page{size:A4;margin:10mm}' +
+        'body{background:#fff}' +
+        '.mg-badge-print{background:#fff;padding:0;gap:10mm}' +
+        '.mg-badge{break-inside:avoid;page-break-inside:avoid;box-shadow:none !important;' +
+          '-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+      '}'
+  });
 }
 
 /* ------------------------------------------------------------
